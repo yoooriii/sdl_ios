@@ -648,20 +648,20 @@ static const int TCPPortUnspecified = -1;
 #pragma mark - App state handling
 
 - (void)sdl_onAppStateUpdated:(NSNotification *)notification {
-    dispatch_async(_stateMachineQueue, ^{
-        if (notification.name == UIApplicationWillResignActiveNotification) {
-            if ([self sdl_isTransportOpened] && self.secondaryTransportType == SDLSecondaryTransportTypeTCP) {
-                SDLLogD(@"Disconnecting TCP transport since the app will go to background");
-                [self.stateMachine transitionToState:SDLSecondaryTransportStateConfigured];
-            }
-        } else if (notification.name == UIApplicationDidBecomeActiveNotification) {
-            if (([self.stateMachine isCurrentState:SDLSecondaryTransportStateConfigured])
-                && self.secondaryTransportType == SDLSecondaryTransportTypeTCP && [self sdl_isTCPReady] && self.isAppReady) {
-                SDLLogD(@"Resuming TCP transport since the app becomes foreground");
-                [self.stateMachine transitionToState:SDLSecondaryTransportStateConnecting];
-            }
-        }
-    });
+//    dispatch_async(_stateMachineQueue, ^{
+//        if (notification.name == UIApplicationWillResignActiveNotification) {
+//            if ([self sdl_isTransportOpened] && self.secondaryTransportType == SDLSecondaryTransportTypeTCP) {
+//                SDLLogD(@"Disconnecting TCP transport since the app will go to background");
+//                [self.stateMachine transitionToState:SDLSecondaryTransportStateConfigured];
+//            }
+//        } else if (notification.name == UIApplicationDidBecomeActiveNotification) {
+//            if (([self.stateMachine isCurrentState:SDLSecondaryTransportStateConfigured])
+//                && self.secondaryTransportType == SDLSecondaryTransportTypeTCP && [self sdl_isTCPReady] && self.isAppReady) {
+//                SDLLogD(@"Resuming TCP transport since the app becomes foreground");
+//                [self.stateMachine transitionToState:SDLSecondaryTransportStateConnecting];
+//            }
+//        }
+//    });
 }
 
 #pragma mark - Utility methods
