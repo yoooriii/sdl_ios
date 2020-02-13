@@ -156,6 +156,7 @@ static NSDictionary<NSString *, id>* _defaultVideoEncoderSettings;
         }
         
         presentationTimestamp = CMTimeMake((int64_t)self.currentFrameNumber, timeRate);
+        // SDLLogV(@"video frame timestamp: %llu", presentationTimestamp.value);
     }
     self.currentFrameNumber++;
 
@@ -188,6 +189,7 @@ static NSDictionary<NSString *, id>* _defaultVideoEncoderSettings;
     if (!_pixelBufferPool) {
         BOOL success = [self sdl_resetCompressionSession];
         if (success == NO) {
+            SDLLogV(@"Resetting the compression session failed.");
             return NULL;
         }
 
@@ -332,6 +334,13 @@ void sdl_videoEncoderOutputCallback(void * CM_NULLABLE outputCallbackRefCon, voi
 
 /// Attempts to create a new VTCompressionSession using the image dimensions passed when the video encoder was created and returns whether or not creating the new compression session was created successfully.
 - (BOOL)sdl_resetCompressionSession {
+    // Destroy the compression session before attempting to create a new one. Otherwise sometimes the attempt to create a new compression session fails.
+    if (self.compressionSession != NULL) {
+        VTCompressionSessionInvalidate(self.compressionSession);
+        CFRelease(self.compressionSession);
+        self.compressionSession = NULL;
+    }
+    
     OSStatus status = VTCompressionSessionCreate(NULL, (int32_t)self.imageDimensions.width, (int32_t)self.imageDimensions.height, kCMVideoCodecType_H264, NULL, self.sdl_pixelBufferOptions, NULL, &sdl_videoEncoderOutputCallback, (__bridge void *)self, &_compressionSession);
     return (status == noErr) ? YES : NO;
 }
