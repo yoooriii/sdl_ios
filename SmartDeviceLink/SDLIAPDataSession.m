@@ -159,7 +159,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableData *remainder = [self.sendDataQueue frontBuffer];
     if (remainder == nil) {
-        SDLLogV(@"No more data to write to data session's output stream. Returning");
         return;
     }
 
