@@ -76,8 +76,18 @@ NS_ASSUME_NONNULL_BEGIN
     self.audioStarted = NO;
 }
 
+- (void)stopAudioOnSecondaryTransport {
+    [self.audioLifecycleManager stopSecondaryTransport];
+    self.audioStarted = NO;
+}
+
 - (void)stopVideo {
     [self.videoLifecycleManager stop];
+    self.videoStarted = NO;
+}
+
+- (void)stopVideoOnSecondaryTransport {
+    [self.videoLifecycleManager stopSecondaryTransport];
     self.videoStarted = NO;
 }
 
