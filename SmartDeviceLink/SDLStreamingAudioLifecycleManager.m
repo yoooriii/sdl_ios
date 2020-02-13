@@ -95,9 +95,18 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)stop {
-    SDLLogD(@"Stopping audio streaming lifecycle manager");
+    SDLLogD(@"Stopping audio streaming lifecycle manager on transport disconnect");
+    [self sdl_stopWithHMILevelResumption:SDLHMILevelNone];
+}
+
+- (void)stopSecondaryTransport {
+    SDLLogD(@"Stopping audio streaming lifecycle manager on the secondary transport");
+    [self sdl_stopWithHMILevelResumption:self.hmiLevel];
+}
+
+- (void)sdl_stopWithHMILevelResumption:(SDLHMILevel)hmiLevelResumption {
     _protocol = nil;
-    _hmiLevel = SDLHMILevelNone;
+    _hmiLevel = hmiLevelResumption;
     _connectedVehicleMake = nil;
     [self.audioStreamStateMachine transitionToState:SDLAudioStreamManagerStateStopped];
 }
