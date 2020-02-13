@@ -163,12 +163,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Private Helpers
 + (nullable CVPixelBufferRef)sdl_pixelBufferForImageRef:(CGImageRef)imageRef usingPool:(CVPixelBufferPoolRef)pool {
+    if (pool == NULL) {
+        SDLLogE(@"CVPixelBufferPoolRef pool is nil");
+    }
+
     size_t imageWidth = CGImageGetWidth(imageRef);
     size_t imageHeight = CGImageGetHeight(imageRef);
 
     CVPixelBufferRef pixelBuffer;
     CVReturn result = CVPixelBufferPoolCreatePixelBuffer(kCFAllocatorDefault, pool, &pixelBuffer);
     if (result != kCVReturnSuccess) {
+        SDLLogE(@"Creating the pixelBuffer failed with error %d", result);
         return nil;
     }
 
