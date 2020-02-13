@@ -159,6 +159,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stop;
 
 /**
+*  Stop the manager if using the secondary transport. This method is used internally.
+*/
+- (void)stopSecondaryTransport;
+
+/**
  *  This method receives raw image data and will run iOS8+'s hardware video encoder to turn the data into a video stream, which will then be passed to the connected head unit.
  *
  *  @param imageBuffer  A CVImageBufferRef to be encoded by Video Toolbox

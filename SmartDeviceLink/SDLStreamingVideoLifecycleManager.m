@@ -79,6 +79,8 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 @property (strong, nonatomic, nullable) CADisplayLink *displayLink;
 @property (assign, nonatomic) BOOL useDisplayLink;
 
+@property (strong, nonatomic, nullable) CADisplayLink *backgroundDisplayLink;
+
 /**
  * SSRC of RTP header field.
  *
@@ -191,16 +193,36 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     [self sdl_startVideoSession];
 }
 
+/// There is no point in attempting to send an end video service control frame because the transport has been destroyed.
 - (void)stop {
-    SDLLogD(@"Stopping video streaming lifecycle manager");
+    SDLLogD(@"Stopping video streaming lifecycle manager on transport disconnect");
+
+    // Since the session with the head unit was destroyed, reset the `hmiLevel` back to default value of `NONE` and the `videoStreamingState` back to the default state of `NOT_STREAMABLE`
+    [self sdl_stopWithHMILevelResumption:SDLHMILevelNone videoStreamingStateResumption:SDLVideoStreamingStateNotStreamable];
+}
+
+/// An end video service control frame does not to be sent because Core will shut down video and/or audio services on the secondary transport when the secondary transport is closed.
+- (void)stopSecondaryTransport {
+    SDLLogD(@"Stopping video streaming lifecycle manager on the secondary transport");
+
+    // Since the primary transport is still open, the `hmiLevel` and `videoStreamingState` may not have changed (some HMIs may close the SDL app, some may leave the SDL app open). Don't reset the `hmiLevel` and `videoStreamingState` back to the default values.
+    [self sdl_stopWithHMILevelResumption:self.hmiLevel videoStreamingStateResumption:self.videoStreamingState];
+}
+
+/// Resets the manager when video streaming stops.
+/// @param hmiLevelResumption <#hmiLevelResumption description#>
+/// @param videoStreamingStateResumption videoStreamingStateResumption description
+- (void)sdl_stopWithHMILevelResumption:(SDLHMILevel)hmiLevelResumption videoStreamingStateResumption:(SDLVideoStreamingState)videoStreamingStateResumption {
 
     _protocol = nil;
     _backgroundingPixelBuffer = NULL;
     _preferredFormatIndex = 0;
     _preferredResolutionIndex = 0;
 
-    _hmiLevel = SDLHMILevelNone;
-    _videoStreamingState = SDLVideoStreamingStateNotStreamable;
+    [self sdl_stopBackgroundFrames];
+
+    _hmiLevel = hmiLevelResumption;
+    _videoStreamingState = videoStreamingStateResumption;
     _lastPresentationTimestamp = kCMTimeInvalid;
     _connectedVehicleMake = nil;
 
@@ -292,10 +314,6 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
         return;
     }
 
-    if (_showVideoBackgroundDisplay) {
-        [self sdl_sendBackgroundFrames];
-    }
-    [self.touchManager cancelPendingTouches];
 
     if (self.isVideoConnected) {
         [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateSuspended];
@@ -308,10 +326,13 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 // We should be waiting to start any OpenGL drawing until UIApplicationDidBecomeActive is called.
 - (void)didEnterStateAppActive {
     SDLLogD(@"App became active");
+
     if (!self.protocol) {
         SDLLogV(@"No session established with head unit. Ignoring app foregounded notification");
         return;
     }
+
+    [self sdl_stopBackgroundFrames];
 
     if (self.isVideoSuspended) {
         [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateReady];
@@ -333,6 +354,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
 - (void)disposeDisplayLink {
     if (self.displayLink != nil) {
+        SDLLogV(@"Stopping video streaming");
         [self.displayLink invalidate];
         self.displayLink = nil;
     }
@@ -472,6 +494,12 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 - (void)didEnterStateVideoStreamSuspended {
     SDLLogD(@"Video stream suspended");
     [self disposeDisplayLink];
+
+    if (_showVideoBackgroundDisplay) {
+        [self sdl_sendBackgroundFrames];
+    }
+    [self.touchManager cancelPendingTouches];
+
     [[NSNotificationCenter defaultCenter] postNotificationName:SDLVideoStreamSuspendedNotification object:nil];
 }
 
@@ -645,7 +673,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 - (void)videoEncoder:(SDLH264VideoEncoder *)encoder hasEncodedFrame:(NSData *)encodedVideo {
     SDLLogV(@"Video encoder encoded frame, sending data");
     // Do we care about app state here? I don't think so…
-    BOOL capableVideoStreamState = [self.videoStreamStateMachine isCurrentState:SDLVideoStreamManagerStateReady];
+    BOOL capableVideoStreamState = ([self.videoStreamStateMachine isCurrentState:SDLVideoStreamManagerStateReady] || [self.videoStreamStateMachine isCurrentState:SDLVideoStreamManagerStateSuspended]);
 
     if (self.isHmiStateVideoStreamCapable && capableVideoStreamState) {
         if (self.isVideoEncrypted) {
@@ -653,6 +681,10 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
         } else {
             [self.protocol sendRawData:encodedVideo withServiceType:SDLServiceTypeVideo];
         }
+    } else {
+        SDLLogE(@"Video encoder will not send data:\
+            The video stream state machine must be in state ready: %@\
+            The HMI must be able to stream video: %d", self.videoStreamStateMachine.currentState, self.hmiStateVideoStreamCapable);
     }
 }
 
@@ -716,27 +748,75 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     [self.carWindow syncFrame];
 }
 
-- (void)sdl_sendBackgroundFrames {
-    SDLLogV(@"Attempting to send background frames");
+- (void)sdl_backgroundDisplayLinkFired:(CADisplayLink *)backgroundDisplayLink {
+    NSAssert([NSThread isMainThread], @"Background display link should always fire on the main thread");
+    if (@available(iOS 10.0, *)) {
+        SDLLogV(@"Background DisplayLink frame fired, duration: %f, last frame timestamp: %f, target timestamp: %f", backgroundDisplayLink.duration, backgroundDisplayLink.timestamp, backgroundDisplayLink.targetTimestamp);
+    } else {
+        SDLLogV(@"Background DisplayLink frame fired, duration: %f, last frame timestamp: %f, target timestamp: (not available)", backgroundDisplayLink.duration, backgroundDisplayLink.timestamp);
+    }
+
+    if (!self.backgroundingPixelBuffer) {
+        CVPixelBufferRef backgroundingPixelBuffer = [self.videoEncoder newPixelBuffer];
+        if (CVPixelBufferAddText(backgroundingPixelBuffer, self.videoStreamBackgroundString) == NO) {
+            SDLLogE(@"Could not create a backgrounding frame");
+            [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateStopped];
+            return;
+        }
+
+        self.backgroundingPixelBuffer = backgroundingPixelBuffer;
+    }
+
     if (!self.backgroundingPixelBuffer) {
         SDLLogW(@"No background pixel buffer, unable to send background frames");
         return;
     }
 
-    int32_t timeRate = 30;
-    if (self.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate] != nil) {
-        timeRate = ((NSNumber *)self.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate]).intValue;
+    SDLLogV(@"Sending background frame");
+    [self.videoEncoder encodeFrame:self.backgroundingPixelBuffer];
+
+//    int32_t timeRate = 30;
+//    if (self.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate] != nil) {
+//        timeRate = ((NSNumber *)self.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate]).intValue;
+//    }
+//    const CMTime interval = CMTimeMake(1, timeRate);
+//    for (int frameCount = 0; frameCount < FramesToSendOnBackground; frameCount++) {
+//        if (CMTIME_IS_VALID(self.lastPresentationTimestamp)) {
+//            self.lastPresentationTimestamp = CMTimeAdd(self.lastPresentationTimestamp, interval);
+//            [self.videoEncoder encodeFrame:self.backgroundingPixelBuffer presentationTimestamp:self.lastPresentationTimestamp];
+//        } else {
+//            [self.videoEncoder encodeFrame:self.backgroundingPixelBuffer];
+//        }
+//    }
+}
+
+- (void)sdl_sendBackgroundFrames {
+    SDLLogV(@"Attempting to send background frames");
+
+    if (self.backgroundDisplayLink != nil) {
+        [self.backgroundDisplayLink invalidate];
+        self.backgroundDisplayLink = nil;
     }
 
-    const CMTime interval = CMTimeMake(1, timeRate);
-    for (int frameCount = 0; frameCount < FramesToSendOnBackground; frameCount++) {
-        if (CMTIME_IS_VALID(self.lastPresentationTimestamp)) {
-            self.lastPresentationTimestamp = CMTimeAdd(self.lastPresentationTimestamp, interval);
-            [self.videoEncoder encodeFrame:self.backgroundingPixelBuffer presentationTimestamp:self.lastPresentationTimestamp];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSInteger targetFramerate = ((NSNumber *)self.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate]).integerValue;
+        SDLLogD(@"Initializing Backgrounded CADisplayLink with framerate: %ld", (long)targetFramerate);
+        self.backgroundDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(sdl_backgroundDisplayLinkFired:)];
+        if (@available(iOS 10, *)) {
+            self.backgroundDisplayLink.preferredFramesPerSecond = targetFramerate;
         } else {
-            [self.videoEncoder encodeFrame:self.backgroundingPixelBuffer];
+            self.backgroundDisplayLink.frameInterval = (60 / targetFramerate);
         }
-    }
+        [self.backgroundDisplayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+    });
+}
+
+- (void)sdl_stopBackgroundFrames {
+    SDLLogV(@"Stopping background frames");
+    if (self.backgroundDisplayLink == nil) { return; }
+    SDLLogV(@"Stopping background frames");
+    [self.backgroundDisplayLink invalidate];
+    self.backgroundDisplayLink = nil;
 }
 
 - (void)sdl_requestVideoCapabilities:(SDLVideoCapabilityResponseHandler)responseHandler {
@@ -839,6 +919,11 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
 - (NSString *)videoStreamBackgroundString {
     return [NSString stringWithFormat:@"When it is safe to do so, open %@ on your phone", self.appName];
+}
+
+- (void)onProtocolClosed {
+    SDLLogD(@"Secondary transport disconnected on video");
+    //[self stopSecondaryTransport];
 }
 
 @end

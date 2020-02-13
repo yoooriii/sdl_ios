@@ -874,7 +874,7 @@ NSString *const BackgroundTaskTransportName = @"com.sdl.transport.backgroundTask
     }
 
     if (oldProtocol != nil) {
-        [self.streamManager stopAudio];
+        [self.streamManager stopAudioOnSecondaryTransport];
     }
     if (newProtocol != nil) {
         [self.streamManager startAudioWithProtocol:newProtocol];
@@ -887,7 +887,7 @@ NSString *const BackgroundTaskTransportName = @"com.sdl.transport.backgroundTask
     }
 
     if (oldProtocol != nil) {
-        [self.streamManager stopVideo];
+        [self.streamManager stopVideoOnSecondaryTransport];
     }
     if (newProtocol != nil) {
         [self.streamManager startVideoWithProtocol:newProtocol];
