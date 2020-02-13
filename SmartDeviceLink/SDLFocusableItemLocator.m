@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)sdl_sendHapticRPC {
     if (!self.enableHapticDataRequests) {
-        SDLLogV(@"Attempting to send haptic data to a head unit that does not support haptic data. Haptic data will not be sent.");
+        // SDLLogV(@"Attempting to send haptic data to a head unit that does not support haptic data. Haptic data will not be sent.");
         return;
     }
 
