@@ -11,6 +11,7 @@
 
 #import "SDLSecondaryTransportManager.h"
 
+#import "SDLBackgroundTaskManager.h"
 #import "SDLControlFramePayloadConstants.h"
 #import "SDLControlFramePayloadRPCStartServiceAck.h"
 #import "SDLControlFramePayloadTransportEventUpdate.h"
@@ -61,6 +62,7 @@ static const float RetryConnectionDelay = 1.0;
 // Indicates that a TCP port is not specified (unconfigured).
 static const int TCPPortUnspecified = -1;
 
+NSString *const BackgroundTaskSecondaryTransportName = @"com.sdl.secondarytransport.backgroundTask";
 
 @interface SDLSecondaryTransportManager ()
 
@@ -97,9 +99,10 @@ static const int TCPPortUnspecified = -1;
 @property (strong, nonatomic, nullable) NSString *ipAddress;
 // TCP port number of SDL Core. If the information isn't available then TCPPortUnspecified is stored.
 @property (assign, nonatomic) int tcpPort;
-// App is ready to set security manager to secondary protocol
-//@property (assign, nonatomic, getter=isAppReady) BOOL appReady;
+
 @property (strong, nonatomic, nullable) SDLHMILevel currentHMILevel;
+
+@property (copy, nonatomic) SDLBackgroundTaskManager *backgroundTaskManager;
 
 @end
 
@@ -126,6 +129,8 @@ static const int TCPPortUnspecified = -1;
     _tcpPort = TCPPortUnspecified;
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sdl_hmiStatusDidChange:) name:SDLDidChangeHMIStatusNotification object:nil];
+
+    _backgroundTaskManager = [[SDLBackgroundTaskManager alloc] initWithBackgroundTaskName: BackgroundTaskSecondaryTransportName];
 
     return self;
 }
@@ -653,6 +658,11 @@ static const int TCPPortUnspecified = -1;
 #pragma mark - App state handling
 
 - (void)sdl_onAppStateUpdated:(NSNotification *)notification {
+     if (notification.name == UIApplicationWillResignActiveNotification) {
+        [self.backgroundTaskManager startBackgroundTask];
+    } else if (notification.name == UIApplicationDidBecomeActiveNotification) {
+        [self.backgroundTaskManager endBackgroundTask];
+    }
 //    dispatch_async(_stateMachineQueue, ^{
 //        if (notification.name == UIApplicationWillResignActiveNotification) {
 //            if ([self sdl_isTransportOpened] && self.secondaryTransportType == SDLSecondaryTransportTypeTCP) {
