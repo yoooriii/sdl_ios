@@ -95,12 +95,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)stop {
-    SDLLogD(@"Stopping audio streaming lifecycle manager on transport disconnect");
+    SDLLogD(@"Stopping audio streaming lifecycle manager on transport disconnect, resetting hmiLevel to: %@", SDLHMILevelNone);
     [self sdl_stopWithHMILevelResumption:SDLHMILevelNone];
 }
 
 - (void)stopSecondaryTransport {
-    SDLLogD(@"Stopping audio streaming lifecycle manager on the secondary transport");
+    SDLLogD(@"Stopping audio streaming lifecycle manager on the secondary transport, assuming the hmiLevel is: %@", self.hmiLevel);
     [self sdl_stopWithHMILevelResumption:self.hmiLevel];
 }
 
@@ -162,6 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }];
     } else {
+        SDLLogV(@"Sending audio start service control frame. SDL app HMI Level is %@", self.hmiLevel);
         [self.protocol startServiceWithType:SDLServiceTypeAudio payload:nil];
     }
 }
@@ -172,8 +173,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)didEnterStateAudioStreamShuttingDown {
-    SDLLogD(@"Audio stream shutting down");
-    [self.protocol endServiceWithType:SDLServiceTypeAudio];
+    SDLLogD(@"Audio stream shutting down. Not sending end service for audio");
+    // [self.protocol endServiceWithType:SDLServiceTypeAudio];
 }
 
 #pragma mark - SDLProtocolListener

@@ -195,7 +195,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
 /// There is no point in attempting to send an end video service control frame because the transport has been destroyed.
 - (void)stop {
-    SDLLogD(@"Stopping video streaming lifecycle manager on transport disconnect");
+    SDLLogD(@"Stopping video streaming lifecycle manager on transport disconnect, assuming the hmiLevel is: %@ and videoStreamingState is %@", SDLHMILevelNone, SDLVideoStreamingStateNotStreamable);
 
     // Since the session with the head unit was destroyed, reset the `hmiLevel` back to default value of `NONE` and the `videoStreamingState` back to the default state of `NOT_STREAMABLE`
     [self sdl_stopWithHMILevelResumption:SDLHMILevelNone videoStreamingStateResumption:SDLVideoStreamingStateNotStreamable];
@@ -203,15 +203,15 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
 /// An end video service control frame does not to be sent because Core will shut down video and/or audio services on the secondary transport when the secondary transport is closed.
 - (void)stopSecondaryTransport {
-    SDLLogD(@"Stopping video streaming lifecycle manager on the secondary transport");
+    SDLLogD(@"Stopping video streaming lifecycle manager on the secondary transport, assuming the hmiLevel is: %@ and videoStreamingState is %@", self.hmiLevel, self.videoStreamingState);
 
     // Since the primary transport is still open, the `hmiLevel` and `videoStreamingState` may not have changed (some HMIs may close the SDL app, some may leave the SDL app open). Don't reset the `hmiLevel` and `videoStreamingState` back to the default values.
     [self sdl_stopWithHMILevelResumption:self.hmiLevel videoStreamingStateResumption:self.videoStreamingState];
 }
 
 /// Resets the manager when video streaming stops.
-/// @param hmiLevelResumption <#hmiLevelResumption description#>
-/// @param videoStreamingStateResumption videoStreamingStateResumption description
+/// @param hmiLevelResumption TODO
+/// @param videoStreamingStateResumption TODO
 - (void)sdl_stopWithHMILevelResumption:(SDLHMILevel)hmiLevelResumption videoStreamingStateResumption:(SDLVideoStreamingState)videoStreamingStateResumption {
 
     _protocol = nil;
@@ -725,7 +725,8 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     }
 
     if (self.isVideoConnected || self.isVideoSuspended) {
-        [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateShuttingDown];
+        SDLLogV(@"Video currently streaming. Not sending end service for video");
+        // [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateShuttingDown];
     } else {
         SDLLogV(@"No video currently streaming. Will not send an end video service request");
     }
@@ -876,7 +877,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
             }
         }];
     } else {
-        SDLLogD(@"Sending insecure video start service with payload: %@", startVideoPayload);
+        SDLLogD(@"Sending insecure video start service with payload: %@. SDL app HMI Level is %@", startVideoPayload, self.hmiLevel);
         [self.protocol startServiceWithType:SDLServiceTypeVideo payload:startVideoPayload.data];
     }
 }
