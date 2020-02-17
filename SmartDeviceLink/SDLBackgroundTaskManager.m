@@ -43,6 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.currentBackgroundTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithName:self.backgroundTaskName expirationHandler:^{
         SDLLogD(@"The %@ background task expired", self.backgroundTaskName);
         [weakself endBackgroundTask];
+
+        if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
+            SDLLogV(@"App is still in background. Creating a new background task");
+            [weakself startBackgroundTask];
+        }
     }];
 
     SDLLogD(@"The %@ background task started with id: %lu", self.backgroundTaskName, (unsigned long)self.currentBackgroundTaskId);
