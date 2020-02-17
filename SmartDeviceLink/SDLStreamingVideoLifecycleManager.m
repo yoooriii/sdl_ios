@@ -48,9 +48,10 @@
 #import "SDLVideoStreamingCapability.h"
 #import "SDLVersion.h"
 
-static NSUInteger const FramesToSendOnBackground = 30;
 
 NS_ASSUME_NONNULL_BEGIN
+
+static NSUInteger const FramesToSendOnBackground = 30;
 
 typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_Nullable capability);
 
@@ -79,7 +80,9 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 @property (strong, nonatomic, nullable) CADisplayLink *displayLink;
 @property (assign, nonatomic) BOOL useDisplayLink;
 
-@property (strong, nonatomic, nullable) CADisplayLink *backgroundDisplayLink;
+@property (strong, nonatomic, nullable) NSTimer *backgroundDisplayLink;
+@property (assign, nonatomic) CFTimeInterval startTime;
+@property (assign, nonatomic) NSInteger startTimeCount;
 
 /**
  * SSRC of RTP header field.
@@ -93,6 +96,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 @property (assign, nonatomic) CMTime lastPresentationTimestamp;
 
 @property (copy, nonatomic, readonly) NSString *videoStreamBackgroundString;
+@property (strong, nonatomic, nullable) NSData *lastEncodedVideoFrame;
 
 @end
 
@@ -176,6 +180,9 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
     _ssrc = arc4random_uniform(UINT32_MAX);
     _lastPresentationTimestamp = kCMTimeInvalid;
+    _startTime = 0.0;
+    _startTimeCount = 0;
+    _lastEncodedVideoFrame = nil;
 
     return self;
 }
@@ -219,12 +226,15 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     _preferredFormatIndex = 0;
     _preferredResolutionIndex = 0;
 
-    [self sdl_stopBackgroundFrames];
+     [self sdl_stopBackgroundFrames];
 
     _hmiLevel = hmiLevelResumption;
     _videoStreamingState = videoStreamingStateResumption;
     _lastPresentationTimestamp = kCMTimeInvalid;
     _connectedVehicleMake = nil;
+
+    _startTimeCount = 0;
+    _startTime = 0.0;
 
     [self.videoScaleManager stop];
     [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateStopped];
@@ -314,7 +324,6 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
         return;
     }
 
-
     if (self.isVideoConnected) {
         [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateSuspended];
     } else {
@@ -332,7 +341,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
         return;
     }
 
-    [self sdl_stopBackgroundFrames];
+     [self sdl_stopBackgroundFrames];
 
     if (self.isVideoSuspended) {
         [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateReady];
@@ -517,11 +526,12 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 }
 
 - (void)sdl_handleVideoStartServiceAck:(SDLProtocolMessage *)videoStartServiceAck {
-    SDLLogD(@"Video service started");
+    self.startTimeCount = 0;
+    self.startTime = CACurrentMediaTime();
     _videoEncrypted = videoStartServiceAck.header.encrypted;
 
     SDLControlFramePayloadVideoStartServiceAck *videoAckPayload = [[SDLControlFramePayloadVideoStartServiceAck alloc] initWithData:videoStartServiceAck.payload];
-    SDLLogV(@"ACK: %@", videoAckPayload);
+    SDLLogV(@"Video service started with ACK: %@", videoAckPayload);
 
     if (videoAckPayload.mtu != SDLControlFrameInt64NotFound) {
         [[SDLGlobals sharedGlobals] setDynamicMTUSize:(NSUInteger)videoAckPayload.mtu forServiceType:SDLServiceTypeVideo];
@@ -679,6 +689,18 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
         if (self.isVideoEncrypted) {
             [self.protocol sendEncryptedRawData:encodedVideo onService:SDLServiceTypeVideo];
         } else {
+            if (self.startTimeCount < 10) {
+                CFTimeInterval endTime = CACurrentMediaTime();
+                CFTimeInterval timeElapsed = endTime - self.startTime;
+                if (self.startTimeCount == 0) {
+                    SDLLogV(@"Time elapsed between getting start service ACK and sending first video frame %f", timeElapsed);
+                } else {
+                    SDLLogV(@"Time elapsed between sending video frames #%ld, %f", (long)self.startTimeCount, timeElapsed);
+                }
+                self.startTime = endTime;
+            }
+            self.startTimeCount += 1;
+            self.lastEncodedVideoFrame = encodedVideo;
             [self.protocol sendRawData:encodedVideo withServiceType:SDLServiceTypeVideo];
         }
     } else {
@@ -749,49 +771,25 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     [self.carWindow syncFrame];
 }
 
-- (void)sdl_backgroundDisplayLinkFired:(CADisplayLink *)backgroundDisplayLink {
-    NSAssert([NSThread isMainThread], @"Background display link should always fire on the main thread");
-    if (@available(iOS 10.0, *)) {
-        SDLLogV(@"Background DisplayLink frame fired, duration: %f, last frame timestamp: %f, target timestamp: %f", backgroundDisplayLink.duration, backgroundDisplayLink.timestamp, backgroundDisplayLink.targetTimestamp);
-    } else {
-        SDLLogV(@"Background DisplayLink frame fired, duration: %f, last frame timestamp: %f, target timestamp: (not available)", backgroundDisplayLink.duration, backgroundDisplayLink.timestamp);
+- (void)sdl_sendBackgroundFrames {
+    int32_t timeRate = 30;
+    if (self.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate] != nil) {
+        timeRate = ((NSNumber *)self.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate]).intValue;
     }
-
-    if (!self.backgroundingPixelBuffer) {
-        CVPixelBufferRef backgroundingPixelBuffer = [self.videoEncoder newPixelBuffer];
-        if (CVPixelBufferAddText(backgroundingPixelBuffer, self.videoStreamBackgroundString) == NO) {
-            SDLLogE(@"Could not create a backgrounding frame");
-            [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateStopped];
-            return;
+    const CMTime interval = CMTimeMake(1, timeRate);
+    for (int frameCount = 0; frameCount < FramesToSendOnBackground; frameCount++) {
+        if (CMTIME_IS_VALID(self.lastPresentationTimestamp)) {
+            self.lastPresentationTimestamp = CMTimeAdd(self.lastPresentationTimestamp, interval);
+            [self.videoEncoder encodeFrame:self.backgroundingPixelBuffer presentationTimestamp:self.lastPresentationTimestamp];
+        } else {
+            [self.videoEncoder encodeFrame:self.backgroundingPixelBuffer];
         }
-
-        self.backgroundingPixelBuffer = backgroundingPixelBuffer;
     }
 
-    if (!self.backgroundingPixelBuffer) {
-        SDLLogW(@"No background pixel buffer, unable to send background frames");
-        return;
-    }
-
-    SDLLogV(@"Sending background frame");
-    [self.videoEncoder encodeFrame:self.backgroundingPixelBuffer];
-
-//    int32_t timeRate = 30;
-//    if (self.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate] != nil) {
-//        timeRate = ((NSNumber *)self.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate]).intValue;
-//    }
-//    const CMTime interval = CMTimeMake(1, timeRate);
-//    for (int frameCount = 0; frameCount < FramesToSendOnBackground; frameCount++) {
-//        if (CMTIME_IS_VALID(self.lastPresentationTimestamp)) {
-//            self.lastPresentationTimestamp = CMTimeAdd(self.lastPresentationTimestamp, interval);
-//            [self.videoEncoder encodeFrame:self.backgroundingPixelBuffer presentationTimestamp:self.lastPresentationTimestamp];
-//        } else {
-//            [self.videoEncoder encodeFrame:self.backgroundingPixelBuffer];
-//        }
-//    }
+    [self sdl_sendFillerBackgroundFrames];
 }
 
-- (void)sdl_sendBackgroundFrames {
+- (void)sdl_sendFillerBackgroundFrames {
     SDLLogV(@"Attempting to send background frames");
 
     if (self.backgroundDisplayLink != nil) {
@@ -800,16 +798,17 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSInteger targetFramerate = ((NSNumber *)self.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate]).integerValue;
-        SDLLogD(@"Initializing Backgrounded CADisplayLink with framerate: %ld", (long)targetFramerate);
-        self.backgroundDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(sdl_backgroundDisplayLinkFired:)];
-        if (@available(iOS 10, *)) {
-            self.backgroundDisplayLink.preferredFramesPerSecond = targetFramerate;
-        } else {
-            self.backgroundDisplayLink.frameInterval = (60 / targetFramerate);
-        }
-        [self.backgroundDisplayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+        SDLLogD(@"Initializing Backgrounded NSTimer with framerate: 60fps");
+        // CADisplayLink is invalidated when device is locked. This does not seem to be an issue with NSTimer.
+        self.backgroundDisplayLink = [NSTimer timerWithTimeInterval:1.f/60.f target:self selector:@selector(sdl_backgroundDisplayLinkFired:) userInfo:nil repeats:YES];
+        [[NSRunLoop mainRunLoop] addTimer:self.backgroundDisplayLink forMode:NSDefaultRunLoopMode];
     });
+}
+
+- (void)sdl_backgroundDisplayLinkFired:(NSTimer *)backgroundDisplayLink {
+    NSAssert([NSThread isMainThread], @"Background display link should always fire on the main thread");
+    SDLLogV(@"Sending filler background frame");
+    [self.protocol sendRawData:self.lastEncodedVideoFrame withServiceType:SDLServiceTypeVideo];
 }
 
 - (void)sdl_stopBackgroundFrames {

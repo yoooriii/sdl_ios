@@ -532,6 +532,10 @@ NSString *const BackgroundTaskTransportName = @"com.sdl.transport.backgroundTask
 
     // Stop the background task now that setup has completed
     [self.backgroundTaskManager endBackgroundTask];
+
+    // Start background task if app is backgrounded
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sdl_onAppStateUpdated:) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sdl_onAppStateUpdated:) name:UIApplicationWillResignActiveNotification object:nil];
 }
 
 - (void)didEnterStateUnregistering {
@@ -891,6 +895,14 @@ NSString *const BackgroundTaskTransportName = @"com.sdl.transport.backgroundTask
     }
     if (newProtocol != nil) {
         [self.streamManager startVideoWithProtocol:newProtocol];
+    }
+}
+
+- (void)sdl_onAppStateUpdated:(NSNotification *)notification {
+     if (notification.name == UIApplicationWillResignActiveNotification) {
+        [self.backgroundTaskManager startBackgroundTask];
+    } else if (notification.name == UIApplicationDidBecomeActiveNotification) {
+        [self.backgroundTaskManager endBackgroundTask];
     }
 }
 
