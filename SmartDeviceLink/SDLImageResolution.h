@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)makeSize;
 
+- (float)normalizedAspectRatio;
+
 @end
 
 NS_ASSUME_NONNULL_END

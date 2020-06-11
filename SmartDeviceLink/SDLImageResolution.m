@@ -43,6 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
     return CGSizeMake(self.resolutionWidth.floatValue, self.resolutionHeight.floatValue);
 }
 
+- (float)normalizedAspectRatio {
+    const float width = self.resolutionWidth.floatValue;
+    const float height = self.resolutionHeight.floatValue;
+    return (0 == width || 0 == height) ? 0 : fabsf(fmaxf(width, height)/fminf(width, height));
+}
 
 - (NSString *)description {
     return [NSString stringWithFormat:@"<%@:%p> {%@ x %@}", NSStringFromClass(self.class), self, self.resolutionWidth, self.resolutionHeight];
