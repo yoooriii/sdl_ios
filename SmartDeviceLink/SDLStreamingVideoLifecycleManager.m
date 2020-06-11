@@ -759,9 +759,25 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
     for (SDLVideoStreamingCapability* nextCapability in allCapabilities) {
         SDLImageResolution *imageResolution = [nextCapability makeImageResolution];
-        if ([self.supportedPortraitStreamingRange isInRange:imageResolution] ||
-            [self.supportedLandscapeStreamingRange isInRange:imageResolution]) {
+        if ([self.supportedPortraitStreamingRange isImageResolutionInRange:imageResolution] ||
+            [self.supportedLandscapeStreamingRange isImageResolutionInRange:imageResolution]) {
             return nextCapability;
+        }
+
+        const float diagonal = nextCapability.diagonalScreenSize.floatValue;
+        if (0 < diagonal) {
+            if (diagonal >= self.supportedPortraitStreamingRange.minimumDiagonal ||
+                diagonal >= self.supportedLandscapeStreamingRange.minimumDiagonal) {
+                return nextCapability;
+            }
+        }
+
+        const float ratio = nextCapability.preferredResolution.normalizedAspectRatio;
+        if (1 <= ratio) {
+            if ([self.supportedPortraitStreamingRange isAspectRatioInRange:ratio] ||
+                [self.supportedLandscapeStreamingRange isAspectRatioInRange:ratio]) {
+                return nextCapability;
+            }
         }
     }
 

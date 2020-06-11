@@ -35,7 +35,7 @@
     return [[self.class alloc] initWithResolutionsMinimum:self.minimumResolution maximun:self.maximumResolution];
 }
 
-- (BOOL)isInRange:(SDLImageResolution*)imageResolution {
+- (BOOL)isImageResolutionInRange:(SDLImageResolution*)imageResolution {
     if (!imageResolution || !self.minimumResolution || !self.maximumResolution) {
         return NO;
     }
@@ -45,6 +45,18 @@
     const CGSize size = imageResolution.makeSize;
     return (size.width >= minSize.width) && (size.width <= maxSize.width) &&
             (size.height >= minSize.height) && (size.height <= maxSize.height);
+}
+
+- (BOOL)isAspectRatioInRange:(float)aspectRatio {
+    return (aspectRatio >= self.minimumAspectRatio) && (aspectRatio <= self.maximumAspectRatio);
+}
+
+- (float)minimumAspectRatio {
+    return self.minimumResolution ? [self.minimumResolution normalizedAspectRatio] : _minimumAspectRatio;
+}
+
+- (float)maximumAspectRatio {
+    return self.maximumResolution ? [self.maximumResolution normalizedAspectRatio] : _maximumAspectRatio;
 }
 
 @end
