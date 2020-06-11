@@ -1556,6 +1556,9 @@
 		B3AC221A247C3236008D372A /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = B3AC2219247C3236008D372A /* art.scnassets */; };
 		B3AC221D247EBB1F008D372A /* SimpleRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AC221C247EBB1F008D372A /* SimpleRootView.m */; };
 		B3AC2220247EBB59008D372A /* TouchModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AC221F247EBB59008D372A /* TouchModel.m */; };
+		B3E049412492237F00D8CBE1 /* SDLSupportedStreamingRange.h in Headers */ = {isa = PBXBuildFile; fileRef = B3E0493F2492237F00D8CBE1 /* SDLSupportedStreamingRange.h */; };
+		B3E049422492237F00D8CBE1 /* SDLSupportedStreamingRange.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E049402492237F00D8CBE1 /* SDLSupportedStreamingRange.m */; };
+		B3E0494524923AF800D8CBE1 /* SDLStreamingVideoDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B3E0494324923AF800D8CBE1 /* SDLStreamingVideoDelegate.h */; };
 		DA0C46AD1DCD35080001F2A8 /* SDLRPCParameterNames.m in Sources */ = {isa = PBXBuildFile; fileRef = DA0C46AC1DCD35080001F2A8 /* SDLRPCParameterNames.m */; };
 		DA0C46AF1DCD41E30001F2A8 /* SDLMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = DA0C46AE1DCD41E30001F2A8 /* SDLMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DA318C1F1DD0F06C00C035AC /* NSMutableDictionary+Store.h in Headers */ = {isa = PBXBuildFile; fileRef = DA318C1D1DD0F06C00C035AC /* NSMutableDictionary+Store.h */; };
@@ -3327,6 +3330,9 @@
 		B3AC221C247EBB1F008D372A /* SimpleRootView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimpleRootView.m; sourceTree = "<group>"; };
 		B3AC221E247EBB59008D372A /* TouchModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TouchModel.h; sourceTree = "<group>"; };
 		B3AC221F247EBB59008D372A /* TouchModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TouchModel.m; sourceTree = "<group>"; };
+		B3E0493F2492237F00D8CBE1 /* SDLSupportedStreamingRange.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SDLSupportedStreamingRange.h; sourceTree = "<group>"; };
+		B3E049402492237F00D8CBE1 /* SDLSupportedStreamingRange.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SDLSupportedStreamingRange.m; sourceTree = "<group>"; };
+		B3E0494324923AF800D8CBE1 /* SDLStreamingVideoDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SDLStreamingVideoDelegate.h; sourceTree = "<group>"; };
 		BB3C600D221AEF37007DD4CA /* NSMutableDictionary+StoreSpec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSMutableDictionary+StoreSpec.m"; path = "DevAPISpecs/NSMutableDictionary+StoreSpec.m"; sourceTree = "<group>"; };
 		DA0C46AC1DCD35080001F2A8 /* SDLRPCParameterNames.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDLRPCParameterNames.m; sourceTree = "<group>"; };
 		DA0C46AE1DCD41E30001F2A8 /* SDLMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDLMacros.h; sourceTree = "<group>"; };
@@ -4087,6 +4093,9 @@
 			children = (
 				5DA23FFE1F325621009C0313 /* SDLStreamingMediaConfiguration.h */,
 				5DA23FFF1F325621009C0313 /* SDLStreamingMediaConfiguration.m */,
+				B3E0493F2492237F00D8CBE1 /* SDLSupportedStreamingRange.h */,
+				B3E049402492237F00D8CBE1 /* SDLSupportedStreamingRange.m */,
+				B3E0494324923AF800D8CBE1 /* SDLStreamingVideoDelegate.h */,
 			);
 			name = Configuration;
 			sourceTree = "<group>";
@@ -6748,6 +6757,7 @@
 				1EAA47112033FE80000FE74B /* SDLStationIDNumber.h in Headers */,
 				5D9FC2A61FD8815800ACA5C2 /* SDLPCMAudioConverter.h in Headers */,
 				1EAA47292034388D000FE74B /* SDLAudioControlData.h in Headers */,
+				B3E049412492237F00D8CBE1 /* SDLSupportedStreamingRange.h in Headers */,
 				1EAA471D203410BB000FE74B /* SDLAudioControlCapabilities.h in Headers */,
 				1EAA4719203406B2000FE74B /* SDLSISData.h in Headers */,
 				8BBEA6061F324165003EEA26 /* SDLMetadataType.h in Headers */,
@@ -7038,6 +7048,7 @@
 				E9C32B961AB20BA200F283AF /* SDLTimer.h in Headers */,
 				88D5EB37220CD95000EC3782 /* SDLWeatherServiceData.h in Headers */,
 				1FF7DAB81F75B28E00B46C30 /* SDLFocusableItemHitTester.h in Headers */,
+				B3E0494524923AF800D8CBE1 /* SDLStreamingVideoDelegate.h in Headers */,
 				5D61FC3D1A84238C00846EE7 /* SDLAlertResponse.h in Headers */,
 				5D61FDAD1A84238C00846EE7 /* SDLSubscribeButton.h in Headers */,
 				5D8204261BCEA8A600D0A41B /* SDLPermissionManager.h in Headers */,
@@ -7711,6 +7722,7 @@
 				5D61FC641A84238C00846EE7 /* SDLClusterModeStatus.m in Sources */,
 				5DB9965D1F268F97002D8795 /* SDLControlFramePayloadVideoStartService.m in Sources */,
 				5D61FCF91A84238C00846EE7 /* SDLMenuParams.m in Sources */,
+				B3E049422492237F00D8CBE1 /* SDLSupportedStreamingRange.m in Sources */,
 				883468F8234BBBAF003F51E5 /* SDLStreamingVideoScaleManager.m in Sources */,
 				5D61FD7C1A84238C00846EE7 /* SDLScrollableMessage.m in Sources */,
 				5D4D67B11D2FE2F900468B4A /* SDLResponseDispatcher.m in Sources */,

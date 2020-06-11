@@ -47,6 +47,8 @@
 #import "SDLVideoEncoderDelegate.h"
 #import "SDLVideoStreamingCapability.h"
 #import "SDLOnSystemCapabilityUpdated.h"
+#import "SDLStreamingVideoDelegate.h"
+#import "SDLSupportedStreamingRange.h"
 
 static NSUInteger const FramesToSendOnBackground = 30;
 
@@ -82,9 +84,11 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
 @property (assign, nonatomic, readwrite, getter=isVideoEncrypted) BOOL videoEncrypted;
 
-@property (assign, nonatomic) BOOL isPaused;
 @property (strong, nonatomic, nullable) SDLVideoStreamingCapability *videoStreamingCapability;
 @property (assign, nonatomic) BOOL shouldAutoResume;
+@property (strong, nonatomic, nullable) SDLSupportedStreamingRange *supportedLandscapeStreamingRange;
+@property (strong, nonatomic, nullable) SDLSupportedStreamingRange *supportedPortraitStreamingRange;
+@property (weak, nonatomic, nullable) id<SDLStreamingVideoDelegate> streamingVideoDelegate;
 
 /**
  * SSRC of RTP header field.
@@ -134,6 +138,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
     _touchManager = [[SDLTouchManager alloc] initWithHitTester:(id)_focusableItemManager videoScaleManager:_videoScaleManager];
 
+    _streamingVideoDelegate = configuration.streamingMediaConfig.streamingVideoDelegate;
     _requestedEncryptionType = configuration.streamingMediaConfig.maximumDesiredEncryption;
     _dataSource = configuration.streamingMediaConfig.dataSource;
     _useDisplayLink = configuration.streamingMediaConfig.enableForcedFramerateSync;
@@ -692,33 +697,75 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     SDLLogD(@"Video capabilities notification received: %@", videoCapability);
 
     self.videoStreamingCapability = videoCapability;
+    typeof(self) __weak weakSelf = self;
 
     if ([self.videoStreamStateMachine.currentState isEqualToEnum:SDLVideoStreamManagerStateStarting]) {
-        [self sdl_applyVideoCapability:videoCapability];
+        SDLVideoStreamingCapability *matchedVideoCapability = [self matchVideoCapability:videoCapability];
+        self.videoStreamingCapability = matchedVideoCapability;
+        if (matchedVideoCapability) {
+            // match found, let the video service start
+            const CGSize displaySize = matchedVideoCapability.makeImageResolution.makeSize;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf.streamingVideoDelegate videoStreamingSizeDidUpdate:displaySize];
+            });
 
-        // Apply customEncoderSettings here. Note that value from HMI (such as maxBitrate) will be overwritten by custom settings.
-        for (id key in self.customEncoderSettings.keyEnumerator) {
-            self.videoEncoderSettings[key] = [self.customEncoderSettings valueForKey:key];
+            [self sdl_applyVideoCapability:videoCapability];
+
+            // Apply customEncoderSettings here. Note that value from HMI (such as maxBitrate) will be overwritten by custom settings.
+            for (id key in self.customEncoderSettings.keyEnumerator) {
+                self.videoEncoderSettings[key] = [self.customEncoderSettings valueForKey:key];
+            }
+
+            if (self.dataSource != nil) {
+                SDLLogV(@"Calling data source for modified preferred resolutions");
+                self.preferredResolutions = [self.dataSource resolutionFromHeadUnitPreferredResolution:self.preferredResolutions.firstObject];
+                SDLLogD(@"Got specialized video resolutions: %@", self.preferredResolutions);
+            }
+
+            [self sdl_sendVideoStartService];
+        } else {
+            // match not found, full stop
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf.streamingVideoDelegate videoStreamingSizeDoesNotMatch];
+
+                weakSelf.shouldAutoResume = NO; // just in case, at this point it must be NO any way
+                [weakSelf.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateShuttingDown];
+            });
         }
 
-        if (self.dataSource != nil) {
-            SDLLogV(@"Calling data source for modified preferred resolutions");
-            self.preferredResolutions = [self.dataSource resolutionFromHeadUnitPreferredResolution:self.preferredResolutions.firstObject];
-            SDLLogD(@"Got specialized video resolutions: %@", self.preferredResolutions);
-        }
-
-        [self sdl_sendVideoStartService];
         return;
     }
 
     if ([self.videoStreamStateMachine.currentState isEqualToEnum:SDLVideoStreamManagerStateReady]) {
-        typeof(self) __weak weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
             weakSelf.shouldAutoResume = YES;
             [weakSelf.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateShuttingDown];
             // videoStreamingCapability will be applied later when video resumes
         });
     }
+}
+
+- (SDLVideoStreamingCapability * __nullable)matchVideoCapability:(SDLVideoStreamingCapability*)videoStreamingCapability {
+    if (!videoStreamingCapability) {
+        return nil;
+    }
+
+    NSArray <SDLVideoStreamingCapability*>* allCapabilities = [videoStreamingCapability allVideoStreamingCapabilitiesPlain];
+
+    if (!self.supportedLandscapeStreamingRange || !self.supportedPortraitStreamingRange) {
+        // there is nothing to match, return any (1st) object
+        return [allCapabilities firstObject];
+    }
+
+    for (SDLVideoStreamingCapability* nextCapability in allCapabilities) {
+        SDLImageResolution *imageResolution = [nextCapability makeImageResolution];
+        if ([self.supportedPortraitStreamingRange isInRange:imageResolution] ||
+            [self.supportedLandscapeStreamingRange isInRange:imageResolution]) {
+            return nextCapability;
+        }
+    }
+
+    return nil;
 }
 
 #pragma mark - SDLVideoEncoderDelegate
