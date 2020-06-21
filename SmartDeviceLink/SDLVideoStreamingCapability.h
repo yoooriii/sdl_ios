@@ -99,6 +99,7 @@ Convenience init for creating a video streaming capability.
 @property (nullable, strong, nonatomic) NSArray <SDLVideoStreamingCapability*> *additionalVideoStreamingCapabilities;
 
 // this returns a copy array of all capabilities including itself but with no recursion
+// in the result objects the .additionalVideoStreamingCapabilities will be nil
 - (NSArray <SDLVideoStreamingCapability*>*)allVideoStreamingCapabilitiesPlain;
 
 - (SDLImageResolution *)makeImageResolution;
