@@ -1,5 +1,5 @@
 //
-//  SDLStreamingVideoDelegate.h
+//  SDLStreamingMediaDelegate.h
 //  SmartDeviceLink
 //
 //  Created on 6/11/20.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol SDLStreamingVideoDelegate <NSObject>
+@protocol SDLStreamingMediaDelegate <NSObject>
 
 - (void)videoStreamingSizeDidUpdate:(CGSize)displaySize;
 - (void)videoStreamingSizeDoesNotMatch;

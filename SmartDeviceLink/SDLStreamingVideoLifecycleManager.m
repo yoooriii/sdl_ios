@@ -47,7 +47,7 @@
 #import "SDLVideoEncoderDelegate.h"
 #import "SDLVideoStreamingCapability.h"
 #import "SDLOnSystemCapabilityUpdated.h"
-#import "SDLStreamingVideoDelegate.h"
+#import "SDLStreamingMediaDelegate.h"
 #import "SDLSupportedStreamingRange.h"
 
 static NSUInteger const FramesToSendOnBackground = 30;
@@ -88,7 +88,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 @property (assign, nonatomic) BOOL shouldAutoResume;
 @property (strong, nonatomic, nullable) SDLSupportedStreamingRange *supportedLandscapeStreamingRange;
 @property (strong, nonatomic, nullable) SDLSupportedStreamingRange *supportedPortraitStreamingRange;
-@property (weak, nonatomic, nullable) id<SDLStreamingVideoDelegate> streamingVideoDelegate;
+@property (weak, nonatomic, nullable) id<SDLStreamingMediaDelegate> streamingVideoDelegate;
 
 /**
  * SSRC of RTP header field.
@@ -138,7 +138,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
     _touchManager = [[SDLTouchManager alloc] initWithHitTester:(id)_focusableItemManager videoScaleManager:_videoScaleManager];
 
-    _streamingVideoDelegate = configuration.streamingMediaConfig.streamingVideoDelegate;
+    _streamingVideoDelegate = configuration.streamingMediaConfig.delegate;
     _requestedEncryptionType = configuration.streamingMediaConfig.maximumDesiredEncryption;
     _dataSource = configuration.streamingMediaConfig.dataSource;
     _useDisplayLink = configuration.streamingMediaConfig.enableForcedFramerateSync;
