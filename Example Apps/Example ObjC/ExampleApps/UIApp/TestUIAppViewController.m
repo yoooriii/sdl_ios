@@ -8,7 +8,6 @@
 
 #import "TestUIAppViewController.h"
 #import "SDLStreamingMediaManagerConstants.h"
-#import "SDLDisplaySizeParams.h"
 
 @interface TestUIAppViewController ()
 @property (strong, nonatomic) IBOutlet UIView *displayView;
@@ -29,9 +28,7 @@
 @property (assign, nonatomic) BOOL enableDebugFrame;
 @end
 
-@implementation TestUIAppViewController {
-    SDLDisplaySizeParams *_displaySizeParams;
-}
+@implementation TestUIAppViewController
 
 + (TestUIAppViewController*)createViewController {
     UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"ExampleApps" bundle:nil];
@@ -140,65 +137,6 @@
         }
         prevView.backgroundColor = color0;
     }
-}
-
-- (SDLDisplaySizeParams*)displaySizeParams {
-    return _displaySizeParams;
-}
-
-- (void)setDisplaySizeParams:(SDLDisplaySizeParams*)params {
-    NSLog(@"setDisplaySizeParams: %@", params);
-    _displaySizeParams = params;
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self applyDisplaySizeParams];
-    });
-}
-
-- (UIImage *)snapshot {
-    if (![NSThread isMainThread]) {
-        NSLog(@"%s: must be called on the main thread", __PRETTY_FUNCTION__);
-        return nil;
-    }
-    return self.displaySizeParams ? [self generateImageWithSize:self.displaySizeParams] : nil;
-}
-
-#pragma mark - helper functions
-
-- (void)applyDisplaySizeParams {
-        const CGRect frame = _displaySizeParams.appViewportFrame;
-        self.displayConstraintX.constant = frame.origin.x;
-        self.displayConstraintY.constant = frame.origin.y;
-        self.displayConstraintW.constant = frame.size.width;
-        self.displayConstraintH.constant = frame.size.height;
-        // note: constraints do not work offscreen
-        [self.view layoutSubviews];
-    //    self.displayView.frame = frame;
-}
-
-- (UIImage *)generateImageWithSize:(SDLDisplaySizeParams*)sizeModel {
-    const CGRect canvasRect = [sizeModel makeDisplayRect];
-    UIView *targetView = self.displayView;
-
-    UIGraphicsBeginImageContextWithOptions(canvasRect.size, YES, 1);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetInterpolationQuality(context, kCGInterpolationDefault);
-    [targetView drawViewHierarchyInRect:canvasRect afterScreenUpdates:YES];
-    if (self.enableDebugFrame) {
-        CGRect frect = CGRectZero;
-        frect.size = canvasRect.size;
-        frect = CGRectInset(frect, 2, 2);
-        UIBezierPath *bezierFrame = [UIBezierPath bezierPathWithRect:frect];
-        CGFloat dash[] = {2.0, 5.0};
-        CGContextSetLineDash(context, 0, dash, 2);
-        CGContextSetLineWidth(context, 1);
-        CGContextSetStrokeColorWithColor(context, UIColor.redColor.CGColor);
-        CGContextAddPath(context, bezierFrame.CGPath);
-        CGContextDrawPath(context, kCGPathStroke);
-    }
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
 }
 
 @end

@@ -1546,8 +1546,6 @@
 		B3476E142474356D0025DC99 /* sdl_video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B3476E122474356C0025DC99 /* sdl_video.mp4 */; };
 		B3476E1A247437470025DC99 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3476E19247437470025DC99 /* AVKit.framework */; };
 		B3476E1C2474374F0025DC99 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3476E1B2474374F0025DC99 /* AVFoundation.framework */; };
-		B3AC2200247C0305008D372A /* SDLDisplaySizeParams.h in Headers */ = {isa = PBXBuildFile; fileRef = B3AC21FE247C0305008D372A /* SDLDisplaySizeParams.h */; };
-		B3AC2201247C0305008D372A /* SDLDisplaySizeParams.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AC21FF247C0305008D372A /* SDLDisplaySizeParams.m */; };
 		B3AC220C247C05C8008D372A /* TestUIAppViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AC220B247C05C8008D372A /* TestUIAppViewController.m */; };
 		B3AC220F247C0677008D372A /* ExampleApps.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B3AC220E247C0676008D372A /* ExampleApps.storyboard */; };
 		B3AC2210247C0677008D372A /* ExampleApps.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B3AC220E247C0676008D372A /* ExampleApps.storyboard */; };
@@ -3316,8 +3314,6 @@
 		B3476E122474356C0025DC99 /* sdl_video.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sdl_video.mp4; sourceTree = "<group>"; };
 		B3476E19247437470025DC99 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		B3476E1B2474374F0025DC99 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		B3AC21FE247C0305008D372A /* SDLDisplaySizeParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDLDisplaySizeParams.h; sourceTree = "<group>"; };
-		B3AC21FF247C0305008D372A /* SDLDisplaySizeParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDLDisplaySizeParams.m; sourceTree = "<group>"; };
 		B3AC220A247C05C8008D372A /* TestUIAppViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestUIAppViewController.h; sourceTree = "<group>"; };
 		B3AC220B247C05C8008D372A /* TestUIAppViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestUIAppViewController.m; sourceTree = "<group>"; };
 		B3AC220E247C0676008D372A /* ExampleApps.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ExampleApps.storyboard; sourceTree = "<group>"; };
@@ -6485,8 +6481,6 @@
 		B3476E0D24741C490025DC99 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				B3AC21FE247C0305008D372A /* SDLDisplaySizeParams.h */,
-				B3AC21FF247C0305008D372A /* SDLDisplaySizeParams.m */,
 				B3476E0E24741C5C0025DC99 /* SDLTCPConfig.h */,
 				B3476E0F24741C5C0025DC99 /* SDLTCPConfig.m */,
 			);
@@ -6946,7 +6940,6 @@
 				5D61FDF11A84238C00846EE7 /* SDLUpdateTurnList.h in Headers */,
 				5DB996571F268ECB002D8795 /* SDLControlFramePayloadAudioStartServiceAck.h in Headers */,
 				5D61FD671A84238C00846EE7 /* SDLResult.h in Headers */,
-				B3AC2200247C0305008D372A /* SDLDisplaySizeParams.h in Headers */,
 				755F176222A00B7C0041B9CB /* SDLMenuManagerConstants.h in Headers */,
 				5D61FD351A84238C00846EE7 /* SDLPowerModeStatus.h in Headers */,
 				5D61FD971A84238C00846EE7 /* SDLSingleTireStatus.h in Headers */,
@@ -7907,7 +7900,6 @@
 				5D8B17541AC9E11B006A6E1C /* SDLDialNumberResponse.m in Sources */,
 				DA6223BE1E7B088200878689 /* CVPixelBufferRef+SDLUtil.m in Sources */,
 				752ECDB7228B4D6B00D945F4 /* SDLDynamicMenuUpdateAlgorithm.m in Sources */,
-				B3AC2201247C0305008D372A /* SDLDisplaySizeParams.m in Sources */,
 				1FF7DABC1F75B2BF00B46C30 /* SDLFocusableItemLocator.m in Sources */,
 				EED5CA021F4D18EC00F04000 /* SDLRAWH264Packetizer.m in Sources */,
 				9FE2471622D77AD500F8D2FC /* SDLWindowType.m in Sources */,
