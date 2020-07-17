@@ -88,7 +88,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 @property (assign, nonatomic) BOOL shouldAutoResume;
 @property (strong, nonatomic, nullable) SDLSupportedStreamingRange *supportedLandscapeStreamingRange;
 @property (strong, nonatomic, nullable) SDLSupportedStreamingRange *supportedPortraitStreamingRange;
-@property (weak, nonatomic, nullable) id<SDLStreamingMediaDelegate> streamingVideoDelegate;
+@property (weak, nonatomic, nullable) id<SDLStreamingMediaDelegate> delegate;
 
 /**
  * SSRC of RTP header field.
@@ -138,7 +138,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
     _touchManager = [[SDLTouchManager alloc] initWithHitTester:(id)_focusableItemManager videoScaleManager:_videoScaleManager];
 
-    _streamingVideoDelegate = configuration.streamingMediaConfig.delegate;
+    _delegate = configuration.streamingMediaConfig.delegate;
     _requestedEncryptionType = configuration.streamingMediaConfig.maximumDesiredEncryption;
     _dataSource = configuration.streamingMediaConfig.dataSource;
     _useDisplayLink = configuration.streamingMediaConfig.enableForcedFramerateSync;
@@ -706,7 +706,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
             // match found, let the video service start
             const CGSize displaySize = matchedVideoCapability.makeImageResolution.makeSize;
             dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf.streamingVideoDelegate videoStreamingSizeDidUpdate:displaySize];
+                [weakSelf.delegate videoStreamingSizeDidUpdate:displaySize];
             });
 
             [self sdl_applyVideoCapability:videoCapability];
@@ -726,7 +726,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
         } else {
             // match not found, full stop
             dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf.streamingVideoDelegate videoStreamingSizeDoesNotMatch];
+                [weakSelf.delegate videoStreamingSizeDoesNotMatch];
 
                 weakSelf.shouldAutoResume = NO; // just in case, at this point it must be NO any way
                 [weakSelf.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateShuttingDown];
