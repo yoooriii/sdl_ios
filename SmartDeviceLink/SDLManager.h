@@ -111,6 +111,11 @@ typedef void (^SDLManagerReadyBlock)(BOOL success, NSError *_Nullable error);
 @property (strong, nonatomic, readonly, nullable) SDLProxy *proxy;
 #pragma clang diagnostic pop
 
+/**
+ * The version number of the SDL V4 interface, string representation
+ * Optional
+ */
+@property (nonatomic, nullable) NSString *sdlMsgVersionString;
 
 #pragma mark Lifecycle
 

@@ -8,31 +8,32 @@
 
 #import <Foundation/Foundation.h>
 
-#import "SDLLifecycleManager.h"
-
 #import "NSMapTable+Subscripting.h"
+#import "SDLAsynchronousRPCOperation.h"
 #import "SDLAsynchronousRPCRequestOperation.h"
 #import "SDLBackgroundTaskManager.h"
 #import "SDLChangeRegistration.h"
 #import "SDLConfiguration.h"
 #import "SDLConnectionManagerType.h"
 #import "SDLEncryptionConfiguration.h"
-#import "SDLLogMacros.h"
-#import "SDLError.h"
 #import "SDLEncryptionLifecycleManager.h"
+#import "SDLError.h"
 #import "SDLFile.h"
 #import "SDLFileManager.h"
 #import "SDLFileManagerConfiguration.h"
 #import "SDLGlobals.h"
 #import "SDLLifecycleConfiguration.h"
 #import "SDLLifecycleConfigurationUpdate.h"
+#import "SDLLifecycleManager.h"
 #import "SDLLockScreenConfiguration.h"
 #import "SDLLockScreenManager.h"
 #import "SDLLockScreenPresenter.h"
 #import "SDLLogConfiguration.h"
 #import "SDLLogFileModuleMap.h"
+#import "SDLLogMacros.h"
 #import "SDLLogManager.h"
 #import "SDLManagerDelegate.h"
+#import "SDLMsgVersion.h"
 #import "SDLNotificationDispatcher.h"
 #import "SDLOnAppInterfaceUnregistered.h"
 #import "SDLOnHMIStatus.h"
@@ -45,7 +46,6 @@
 #import "SDLRegisterAppInterface.h"
 #import "SDLRegisterAppInterfaceResponse.h"
 #import "SDLResponseDispatcher.h"
-#import "SDLAsynchronousRPCOperation.h"
 #import "SDLResult.h"
 #import "SDLScreenManager.h"
 #import "SDLSecondaryTransportManager.h"
@@ -61,17 +61,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-SDLLifecycleState *const SDLLifecycleStateStopped = @"Stopped";
-SDLLifecycleState *const SDLLifecycleStateStarted = @"Started";
-SDLLifecycleState *const SDLLifecycleStateReconnecting = @"Reconnecting";
 SDLLifecycleState *const SDLLifecycleStateConnected = @"Connected";
+SDLLifecycleState *const SDLLifecycleStateReady = @"Ready";
+SDLLifecycleState *const SDLLifecycleStateReconnecting = @"Reconnecting";
 SDLLifecycleState *const SDLLifecycleStateRegistered = @"Registered";
-SDLLifecycleState *const SDLLifecycleStateUpdatingConfiguration = @"UpdatingConfiguration";
-SDLLifecycleState *const SDLLifecycleStateSettingUpManagers = @"SettingUpManagers";
 SDLLifecycleState *const SDLLifecycleStateSettingUpAppIcon = @"SettingUpAppIcon";
 SDLLifecycleState *const SDLLifecycleStateSettingUpHMI = @"SettingUpHMI";
+SDLLifecycleState *const SDLLifecycleStateSettingUpManagers = @"SettingUpManagers";
+SDLLifecycleState *const SDLLifecycleStateStarted = @"Started";
+SDLLifecycleState *const SDLLifecycleStateStopped = @"Stopped";
 SDLLifecycleState *const SDLLifecycleStateUnregistering = @"Unregistering";
-SDLLifecycleState *const SDLLifecycleStateReady = @"Ready";
+SDLLifecycleState *const SDLLifecycleStateUpdatingConfiguration = @"UpdatingConfiguration";
 
 NSString *const BackgroundTaskTransportName = @"com.sdl.transport.backgroundTask";
 
@@ -338,6 +338,11 @@ NSString *const BackgroundTaskTransportName = @"com.sdl.transport.backgroundTask
 
     // Build a register app interface request with the configuration data
     SDLRegisterAppInterface *regRequest = [[SDLRegisterAppInterface alloc] initWithLifecycleConfiguration:self.configuration.lifecycleConfig];
+    // override the default sdl rpc message version if set
+    SDLMsgVersion *sdlMsgVersion = [SDLMsgVersion versionWithString:self.sdlMsgVersionString];
+    if (sdlMsgVersion) {
+        regRequest.sdlMsgVersion = sdlMsgVersion;
+    }
 
     // Send the request and depending on the response, post the notification
     __weak typeof(self) weakSelf = self;
@@ -359,6 +364,7 @@ NSString *const BackgroundTaskTransportName = @"com.sdl.transport.backgroundTask
 
         weakSelf.registerResponse = (SDLRegisterAppInterfaceResponse *)response;
         [SDLGlobals sharedGlobals].rpcVersion = [SDLVersion versionWithSDLMsgVersion:weakSelf.registerResponse.sdlMsgVersion];
+        SDLLogD(@"RAI RPC version requested/registered: [%@ / %@]", regRequest.sdlMsgVersion, [SDLGlobals sharedGlobals].rpcVersion);
         [weakSelf sdl_transitionToState:SDLLifecycleStateRegistered];
     }];
 }

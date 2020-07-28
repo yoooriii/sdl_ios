@@ -124,7 +124,6 @@
 		162E831A1A9BDE8B00906325 /* SDLOnLockScreenStatusSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 162E82341A9BDE8A00906325 /* SDLOnLockScreenStatusSpec.m */; };
 		162E831B1A9BDE8B00906325 /* SDLOnPermissionsChangeSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 162E82351A9BDE8A00906325 /* SDLOnPermissionsChangeSpec.m */; };
 		162E831C1A9BDE8B00906325 /* SDLOnSyncPDataSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 162E82361A9BDE8A00906325 /* SDLOnSyncPDataSpec.m */; };
-		162E831D1A9BDE8B00906325 /* SDLOnSystemRequestSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 162E82371A9BDE8A00906325 /* SDLOnSystemRequestSpec.m */; };
 		162E831E1A9BDE8B00906325 /* SDLOnTBTClientStateSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 162E82381A9BDE8A00906325 /* SDLOnTBTClientStateSpec.m */; };
 		162E831F1A9BDE8B00906325 /* SDLOnTouchEventSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 162E82391A9BDE8A00906325 /* SDLOnTouchEventSpec.m */; };
 		162E83201A9BDE8B00906325 /* SDLOnVehicleDataSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 162E823A1A9BDE8A00906325 /* SDLOnVehicleDataSpec.m */; };
@@ -1209,7 +1208,6 @@
 		5DB996601F28C6ED002D8795 /* SDLControlFramePayloadVideoStartServiceAck.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DB9965E1F28C6ED002D8795 /* SDLControlFramePayloadVideoStartServiceAck.h */; };
 		5DB996611F28C6ED002D8795 /* SDLControlFramePayloadVideoStartServiceAck.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DB9965F1F28C6ED002D8795 /* SDLControlFramePayloadVideoStartServiceAck.m */; };
 		5DBAE0AB1D3588AC00CE00BF /* SDLNotificationDispatcherSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DBAE0AA1D3588AC00CE00BF /* SDLNotificationDispatcherSpec.m */; };
-		5DBAE0AD1D368D1A00CE00BF /* SDLResponseDispatcherSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DBAE0AC1D368D1A00CE00BF /* SDLResponseDispatcherSpec.m */; };
 		5DBEFA541F434B9E009EE295 /* SDLStreamingMediaConfigurationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DBEFA531F434B9E009EE295 /* SDLStreamingMediaConfigurationSpec.m */; };
 		5DBEFA581F436132009EE295 /* SDLFakeSecurityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DBEFA571F436132009EE295 /* SDLFakeSecurityManager.m */; };
 		5DBF06231E64A83F00A5CF03 /* SDLLogManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DBF06211E64A83F00A5CF03 /* SDLLogManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1552,6 +1550,9 @@
 		B3476E142474356D0025DC99 /* sdl_video.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B3476E122474356C0025DC99 /* sdl_video.mp4 */; };
 		B3476E1A247437470025DC99 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3476E19247437470025DC99 /* AVKit.framework */; };
 		B3476E1C2474374F0025DC99 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3476E1B2474374F0025DC99 /* AVFoundation.framework */; };
+		B34D698924D0241D00FE7B40 /* VideoStreamingSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B34D698824D0241D00FE7B40 /* VideoStreamingSettingsViewController.m */; };
+		B34D698C24D0298C00FE7B40 /* VideoStreamSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B34D698B24D0298C00FE7B40 /* VideoStreamSettings.m */; };
+		B34D698D24D03DFB00FE7B40 /* SDLOnSystemRequestSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 162E82371A9BDE8A00906325 /* SDLOnSystemRequestSpec.m */; };
 		B3AC220C247C05C8008D372A /* TestUIAppViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AC220B247C05C8008D372A /* TestUIAppViewController.m */; };
 		B3AC220F247C0677008D372A /* ExampleApps.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B3AC220E247C0676008D372A /* ExampleApps.storyboard */; };
 		B3AC2210247C0677008D372A /* ExampleApps.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B3AC220E247C0676008D372A /* ExampleApps.storyboard */; };
@@ -3326,6 +3327,10 @@
 		B3476E122474356C0025DC99 /* sdl_video.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sdl_video.mp4; sourceTree = "<group>"; };
 		B3476E19247437470025DC99 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		B3476E1B2474374F0025DC99 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		B34D698724D0241D00FE7B40 /* VideoStreamingSettingsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoStreamingSettingsViewController.h; sourceTree = SOURCE_ROOT; };
+		B34D698824D0241D00FE7B40 /* VideoStreamingSettingsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoStreamingSettingsViewController.m; sourceTree = SOURCE_ROOT; };
+		B34D698A24D0298C00FE7B40 /* VideoStreamSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VideoStreamSettings.h; path = "Example Apps/Example ObjC/Models/VideoStreamSettings.h"; sourceTree = SOURCE_ROOT; };
+		B34D698B24D0298C00FE7B40 /* VideoStreamSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VideoStreamSettings.m; path = "Example Apps/Example ObjC/Models/VideoStreamSettings.m"; sourceTree = SOURCE_ROOT; };
 		B3AC220A247C05C8008D372A /* TestUIAppViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestUIAppViewController.h; sourceTree = "<group>"; };
 		B3AC220B247C05C8008D372A /* TestUIAppViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestUIAppViewController.m; sourceTree = "<group>"; };
 		B3AC220E247C0676008D372A /* ExampleApps.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ExampleApps.storyboard; sourceTree = "<group>"; };
@@ -4056,6 +4061,8 @@
 				5D1FF2B421304580000EB9B4 /* ConnectionIAPTableViewController.m */,
 				5D1FF2B321304580000EB9B4 /* ConnectionTCPTableViewController.h */,
 				5D1FF2B621304581000EB9B4 /* ConnectionTCPTableViewController.m */,
+				B34D698724D0241D00FE7B40 /* VideoStreamingSettingsViewController.h */,
+				B34D698824D0241D00FE7B40 /* VideoStreamingSettingsViewController.m */,
 			);
 			name = Connection;
 			sourceTree = "<group>";
@@ -6499,6 +6506,8 @@
 		B3476E0D24741C490025DC99 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				B34D698A24D0298C00FE7B40 /* VideoStreamSettings.h */,
+				B34D698B24D0298C00FE7B40 /* VideoStreamSettings.m */,
 				B3476E0E24741C5C0025DC99 /* SDLTCPConfig.h */,
 				B3476E0F24741C5C0025DC99 /* SDLTCPConfig.m */,
 			);
@@ -7536,9 +7545,11 @@
 				5D1FF2A121304515000EB9B4 /* VehicleDataManager.m in Sources */,
 				5D1FF29F21304515000EB9B4 /* ProxyManager.m in Sources */,
 				5D1FF2BF21304598000EB9B4 /* ConnectionAnimatedTransition.m in Sources */,
+				B34D698924D0241D00FE7B40 /* VideoStreamingSettingsViewController.m in Sources */,
 				5D1FF2A721304531000EB9B4 /* Preferences.m in Sources */,
 				B3AC2220247EBB59008D372A /* TouchModel.m in Sources */,
 				5D1FF2CC2130464E000EB9B4 /* main.m in Sources */,
+				B34D698C24D0298C00FE7B40 /* VideoStreamSettings.m in Sources */,
 				5D1FF2C021304598000EB9B4 /* ConnectionTransitionContext.m in Sources */,
 				B3AC2218247C3224008D372A /* GameViewController.m in Sources */,
 				5D1FF2A221304515000EB9B4 /* ButtonManager.m in Sources */,
@@ -8082,7 +8093,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				75CE2041233D335100B9DEF9 /* SDLGetDTCsSpec.m in Sources */,
-				5DBAE0AD1D368D1A00CE00BF /* SDLResponseDispatcherSpec.m in Sources */,
 				162E83951A9BDE8B00906325 /* SDLTurnSpec.m in Sources */,
 				162E83481A9BDE8B00906325 /* SDLUpdateTurnListSpec.m in Sources */,
 				1680B11E1A9CD7AD00DBD79E /* SDLProtocolReceivedMessageRouterSpec.m in Sources */,
@@ -8475,7 +8485,6 @@
 				88E6F1B0220E25B2006156F9 /* SDLMediaServiceDataSpec.m in Sources */,
 				1EB59CCA202DC8E300343A61 /* SDLMassageZoneSpec.m in Sources */,
 				8B7B31B11F2FBD9500BDC38D /* SDLVideoStreamingFormatSpec.m in Sources */,
-				162E831D1A9BDE8B00906325 /* SDLOnSystemRequestSpec.m in Sources */,
 				162E835D1A9BDE8B00906325 /* SDLReadDIDResponseSpec.m in Sources */,
 				5DAD5F87205087430025624C /* SDLTextAndGraphicManagerSpec.m in Sources */,
 				162E82D41A9BDE8A00906325 /* SDLCharacterSetSpec.m in Sources */,
@@ -8551,6 +8560,7 @@
 				000DD56E22EF01FC005AB7A7 /* SDLSeatLocationSpec.m in Sources */,
 				162E83251A9BDE8B00906325 /* SDLAlertSpec.m in Sources */,
 				2BF2F85220ED068200A26EF2 /* SDLAudioStreamingIndicatorSpec.m in Sources */,
+				B34D698D24D03DFB00FE7B40 /* SDLOnSystemRequestSpec.m in Sources */,
 				5D6035D2202CD46200A429C9 /* SDLSpecUtilities.m in Sources */,
 				DA9F7EA81DCC060B00ACAE48 /* SDLGetWaypointsResponseSpec.m in Sources */,
 				162E830A1A9BDE8B00906325 /* SDLVehicleDataTypeSpec.m in Sources */,

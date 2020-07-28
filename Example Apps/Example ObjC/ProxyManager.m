@@ -13,6 +13,8 @@
 #import "SmartDeviceLink.h"
 #import "VehicleDataManager.h"
 #import "SDLCarWindow.h"
+#import "SDLStreamingMediaDelegate.h"
+#import "VideoStreamSettings.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -142,6 +144,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.videoVC) {
         streamingConfig = [SDLStreamingMediaConfiguration autostreamingInsecureConfigurationWithInitialViewController:self.videoVC];
+        streamingConfig.delegate = self.videoVC;
+        streamingConfig.supportedPortraitStreamingRange = self.videoStreamSettings.supportedPortraitStreamingRange;
+        streamingConfig.supportedLandscapeStreamingRange = self.videoStreamSettings.supportedLandscapeStreamingRange;
     } else {
         streamingConfig = [SDLStreamingMediaConfiguration insecureConfiguration];
     }
@@ -150,9 +155,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 
     self.sdlManager = [[SDLManager alloc] initWithConfiguration:config2 delegate:self];
+    self.sdlManager.sdlMsgVersionString = self.videoStreamSettings.SDLVersion;
 
-
-//    [self sdlex_startManager];
     __weak typeof (self) weakSelf = self;
     [self.sdlManager startWithReadyHandler:^(BOOL success, NSError * _Nullable error) {
         if (!success) {

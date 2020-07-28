@@ -14,6 +14,9 @@
 #import "TestUIAppViewController.h"
 #import "SimpleAppViewController.h"
 #import "GameViewController.h"
+#import "SDLStreamingMediaDelegate.h"
+#import "SDLProxy.h"
+#import "VideoStreamSettings.h"
 
 
 typedef NS_ENUM(NSInteger, AppKind) {
@@ -22,6 +25,8 @@ typedef NS_ENUM(NSInteger, AppKind) {
     AppKind3DApp,
     AppKindVideoApp,
 };
+
+@protocol SDLStreamingMediaDelegate;
 
 @interface ConnectionTCPTableViewController ()
 
@@ -32,7 +37,7 @@ typedef NS_ENUM(NSInteger, AppKind) {
 @property (weak, nonatomic) IBOutlet UIButton *connectButton;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *appSelector;
 
-@property (strong, nonatomic, nullable) UIViewController *testAppViewController;
+@property (strong, nonatomic, nullable) UIViewController<SDLStreamingMediaDelegate> *testAppViewController;
 @property (assign, nonatomic) AppKind appKind;
 
 @end
@@ -76,11 +81,11 @@ typedef NS_ENUM(NSInteger, AppKind) {
             SDLTCPConfig *tcpConfig = [SDLTCPConfig configWithHost:self.ipAddressTextField.text port:self.portTextField.text.integerValue];
 
             if (!self.testAppViewController) {
-//                self.appKind = (!self.appSelector || self.appSelector.hidden) ? AppKindSimple : self.appSelector.selectedSegmentIndex;
                 self.appKind = AppKindSimple;
                 self.testAppViewController = [self createTestViewControllerOfType:self.appKind];
             }
             [ProxyManager sharedManager].videoVC = self.testAppViewController;
+            [ProxyManager sharedManager].videoStreamSettings = self.videoStreamSettings;
 
             [[ProxyManager sharedManager] startProxyTCP:tcpConfig];
         } break;
@@ -94,14 +99,13 @@ typedef NS_ENUM(NSInteger, AppKind) {
     }
 }
 
-- (UIViewController*)createTestViewControllerOfType:(AppKind)appKind {
+- (UIViewController<SDLStreamingMediaDelegate>*)createTestViewControllerOfType:(AppKind)appKind {
     switch (appKind) {
         case AppKindVideoApp:
             return nil;
 
         case AppKindSimple: // Video Player
             return [SimpleAppViewController createViewController];
-            return nil;
 
         case AppKind3DApp: // 3D app
             return [GameViewController createViewController];

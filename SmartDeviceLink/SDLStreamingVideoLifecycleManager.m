@@ -126,6 +126,9 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     _customEncoderSettings = configuration.streamingMediaConfig.customVideoEncoderSettings;
     _videoScaleManager = [[SDLStreamingVideoScaleManager alloc] init];
 
+    _supportedLandscapeStreamingRange = configuration.streamingMediaConfig.supportedLandscapeStreamingRange;
+    _supportedPortraitStreamingRange = configuration.streamingMediaConfig.supportedPortraitStreamingRange;
+
     if (configuration.streamingMediaConfig.rootViewController != nil) {
         NSAssert(configuration.streamingMediaConfig.enableForcedFramerateSync, @"When using CarWindow (rootViewController != nil), forceFrameRateSync must be YES");
 

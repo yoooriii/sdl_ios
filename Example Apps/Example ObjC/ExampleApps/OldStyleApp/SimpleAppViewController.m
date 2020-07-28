@@ -125,6 +125,16 @@ static const CGFloat MinSz = -8.0;
     NSLog(@"%s: %@", __PRETTY_FUNCTION__, NSStringFromCGPoint(point));
 }
 
+#pragma mark - SDLStreamingMediaDelegate
+
+- (void)videoStreamingSizeDidUpdate:(CGSize)displaySize {
+    NSLog(@"%s: %@", __PRETTY_FUNCTION__, NSStringFromCGSize(displaySize));
+}
+
+- (void)videoStreamingSizeDoesNotMatch {
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

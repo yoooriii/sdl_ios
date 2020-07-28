@@ -59,4 +59,8 @@
     return self.maximumResolution ? [self.maximumResolution normalizedAspectRatio] : _maximumAspectRatio;
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@: ratio-min/max:[%2.2f/%2.2f], min-diagonal:%2.2f, resolution-min/max:[%@/%@]", NSStringFromClass(self.class), self.minimumAspectRatio, self.maximumAspectRatio, self.minimumDiagonal, self.minimumResolution.stringValue, self.maximumResolution.stringValue];
+}
+
 @end

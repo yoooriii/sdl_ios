@@ -7,12 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SDLStreamingMediaDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SimpleAppViewController : UIViewController
+@interface SimpleAppViewController<SDLStreamingMediaDelegate> : UIViewController
 
-+ (SimpleAppViewController*)createViewController;
++ (instancetype)createViewController;
 
 @end
 

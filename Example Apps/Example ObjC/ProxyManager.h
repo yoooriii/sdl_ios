@@ -18,6 +18,9 @@ typedef NS_ENUM(NSUInteger, ProxyState) {
     ProxyStateConnected
 };
 
+@protocol SDLStreamingMediaDelegate;
+@class VideoStreamSettings;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ProxyManager : NSObject
@@ -25,7 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic, readonly) ProxyState state;
 @property (strong, nonatomic, nullable) SDLManager *sdlManager;
 
-@property (strong, nonatomic, nullable) UIViewController *videoVC;
+@property (strong, nonatomic, nullable) UIViewController<SDLStreamingMediaDelegate> *videoVC;
+@property (strong, nonatomic, nullable) VideoStreamSettings *videoStreamSettings;
 
 + (instancetype)sharedManager;
 - (void)startWithProxyTransportType:(ProxyTransportType)proxyTransportType;

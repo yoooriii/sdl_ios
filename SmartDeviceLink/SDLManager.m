@@ -126,6 +126,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 #pragma clang diagnostic pop
 
+- (void)setSdlMsgVersionString:(nullable NSString *)versionString {
+    self.lifecycleManager.sdlMsgVersionString = versionString;
+}
+
+- (nullable NSString *)sdlMsgVersionString {
+    return self.lifecycleManager.sdlMsgVersionString;
+}
 
 #pragma mark SDLConnectionManager Protocol
 

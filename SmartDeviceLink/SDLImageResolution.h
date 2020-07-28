@@ -36,6 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (float)normalizedAspectRatio;
 
+// string representation, for debug only
+- (NSString*)stringValue;
+
 @end
 
 NS_ASSUME_NONNULL_END

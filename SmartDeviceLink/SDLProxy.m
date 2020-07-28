@@ -1,12 +1,9 @@
 // SDLProxy.m
 
-#import "SDLProxy.h"
-
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
-
 #import "SDLAudioStreamingState.h"
-#import "SDLLogMacros.h"
+#import "SDLCacheFileManager.h"
 #import "SDLEncodedSyncPData.h"
 #import "SDLEncryptionLifecycleManager.h"
 #import "SDLFileType.h"
@@ -17,6 +14,8 @@
 #import "SDLLanguage.h"
 #import "SDLLayoutMode.h"
 #import "SDLLockScreenStatusManager.h"
+#import "SDLLogMacros.h"
+#import "SDLMsgVersion.h"
 #import "SDLOnButtonEvent.h"
 #import "SDLOnButtonPress.h"
 #import "SDLOnHMIStatus.h"
@@ -24,7 +23,10 @@
 #import "SDLPolicyDataParser.h"
 #import "SDLProtocol.h"
 #import "SDLProtocolMessage.h"
+#import "SDLProxy.h"
 #import "SDLPutFile.h"
+#import "SDLRPCFunctionNames.h"
+#import "SDLRPCParameterNames.h"
 #import "SDLRPCPayload.h"
 #import "SDLRPCResponse.h"
 #import "SDLRegisterAppInterfaceResponse.h"
@@ -40,10 +42,6 @@
 #import "SDLUnsubscribeButton.h"
 #import "SDLVehicleType.h"
 #import "SDLVersion.h"
-#import "SDLCacheFileManager.h"
-
-#import "SDLRPCParameterNames.h"
-#import "SDLRPCFunctionNames.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

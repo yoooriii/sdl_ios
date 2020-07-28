@@ -49,6 +49,10 @@ NS_ASSUME_NONNULL_BEGIN
     return (0 == width || 0 == height) ? 0 : fabsf(fmaxf(width, height)/fminf(width, height));
 }
 
+- (NSString*)stringValue {
+    return [NSString stringWithFormat:@"[%@ x %@]", self.resolutionWidth, self.resolutionHeight];
+}
+
 - (NSString *)description {
     return [NSString stringWithFormat:@"<%@:%p> {%@ x %@}", NSStringFromClass(self.class), self, self.resolutionWidth, self.resolutionHeight];
 }

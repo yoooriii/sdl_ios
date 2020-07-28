@@ -139,4 +139,15 @@
     }
 }
 
+#pragma mark - SDLStreamingMediaDelegate
+
+- (void)videoStreamingSizeDidUpdate:(CGSize)displaySize {
+    NSLog(@"%s: %@", __PRETTY_FUNCTION__, NSStringFromCGSize(displaySize));
+}
+
+- (void)videoStreamingSizeDoesNotMatch {
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+}
+
 @end
+

@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import <SceneKit/SceneKit.h>
+#import "SDLStreamingMediaDelegate.h"
 
-@interface GameViewController : UIViewController
-+ (GameViewController*)createViewController;
+@interface GameViewController<SDLStreamingMediaDelegate> : UIViewController
++ (instancetype)createViewController;
 @end
