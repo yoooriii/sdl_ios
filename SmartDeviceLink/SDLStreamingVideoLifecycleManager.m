@@ -230,10 +230,16 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateStopped];
 }
 
-- (void)endVideoServiceWithCompletionHandler:(void (^)(void))completionHandler {
+- (void)secondaryTransportDidDisconnect {
+    SDLLogD(@"Stopping video manager");
+    [self.focusableItemManager stop];
+    [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateStopped];
+}
+
+- (void)endVideoServiceWithCompletionHandler:(void (^)(void))videoEndedCompletionHandler {
     SDLLogD(@"Ending video service");
     [self sdl_disposeDisplayLink];
-    self.videoServiceEndedCompletionHandler = completionHandler;
+    self.videoServiceEndedCompletionHandler = videoEndedCompletionHandler;
     [self.protocol endServiceWithType:SDLServiceTypeVideo];
 }
 
@@ -469,19 +475,22 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     }
 
     if (self.useDisplayLink) {
+        __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSInteger targetFramerate = ((NSNumber *)self.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate]).integerValue;
+            __strong typeof(weakSelf) strongSelf = weakSelf;
+            NSInteger targetFramerate = ((NSNumber *)strongSelf.videoEncoderSettings[(__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate]).integerValue;
             SDLLogD(@"Initializing CADisplayLink with framerate: %ld", (long)targetFramerate);
-            if (self.displayLink) {
+            if (strongSelf.displayLink) {
                 SDLLogW(@"The display link was not disposed in good time");
             }
-            self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(sdl_displayLinkFired:)];
+            strongSelf.displayLink = [CADisplayLink displayLinkWithTarget:strongSelf selector:@selector(sdl_displayLinkFired:)];
+
             if (@available(iOS 10, *)) {
-                self.displayLink.preferredFramesPerSecond = targetFramerate;
+                strongSelf.displayLink.preferredFramesPerSecond = targetFramerate;
             } else {
-                self.displayLink.frameInterval = (60 / targetFramerate);
+                strongSelf.displayLink.frameInterval = (60 / targetFramerate);
             }
-            [self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+            [strongSelf.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
         });
     } else {
         self.touchManager.enableSyncedPanning = NO;
@@ -508,10 +517,10 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     [self.protocol endServiceWithType:SDLServiceTypeVideo];
 }
 
-#pragma mark - SDLProtocolListener
+#pragma mark - SDLProtocolDelegate
 #pragma mark Start Service ACK/NAK
 
-- (void)handleProtocolStartServiceACKMessage:(SDLProtocolMessage *)startServiceACK {
+- (void)protocol:(SDLProtocol *)protocol didReceiveStartServiceACK:(SDLProtocolMessage *)startServiceACK {
     if (startServiceACK.header.serviceType != SDLServiceTypeVideo) { return; }
 
     if (![self.videoStreamStateMachine.currentState isEqualToEnum:SDLVideoStreamManagerStateStarting]) {
@@ -522,8 +531,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     self.videoEncrypted = startServiceACK.header.encrypted;
 
     SDLControlFramePayloadVideoStartServiceAck *videoAckPayload = [[SDLControlFramePayloadVideoStartServiceAck alloc] initWithData:startServiceACK.payload];
-    SDLLogD(@"Request to start video service ACKed with payload: %@", videoAckPayload);
-
+    SDLLogD(@"Request to start video service ACKed on transport %@, with payload: %@", protocol.transport, videoAckPayload);
 
     if (videoAckPayload.mtu != SDLControlFrameInt64NotFound) {
         [[SDLGlobals sharedGlobals] setDynamicMTUSize:(NSUInteger)videoAckPayload.mtu forServiceType:SDLServiceTypeVideo];
@@ -550,7 +558,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateReady];
 }
 
-- (void)handleProtocolStartServiceNAKMessage:(SDLProtocolMessage *)startServiceNAK {
+- (void)protocol:(SDLProtocol *)protocol didReceiveStartServiceNAK:(SDLProtocolMessage *)startServiceNAK {
     if (startServiceNAK.header.serviceType != SDLServiceTypeVideo) { return; }
 
     if (![self.videoStreamStateMachine.currentState isEqualToEnum:SDLVideoStreamManagerStateStarting]) {
@@ -559,7 +567,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     }
 
     SDLControlFramePayloadNak *nakPayload = [[SDLControlFramePayloadNak alloc] initWithData:startServiceNAK.payload];
-    SDLLogE(@"Request to start video service NAKed with reason: %@", nakPayload.description);
+    SDLLogE(@"Request to start video service NAKed on transport %@, with payload: %@", protocol.transport, nakPayload);
 
     // If we have no payload rejected params, we don't know what to do to retry, so we'll just stop and maybe cry
     if (nakPayload.rejectedParams.count == 0) {
@@ -583,9 +591,9 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
 #pragma mark End Service ACK/NAK
 
-- (void)handleProtocolEndServiceACKMessage:(SDLProtocolMessage *)endServiceACK {
+- (void)protocol:(SDLProtocol *)protocol didReceiveEndServiceACK:(SDLProtocolMessage *)endServiceACK {
     if (endServiceACK.header.serviceType != SDLServiceTypeVideo) { return; }
-    SDLLogD(@"Request to end video service ACKed");
+    SDLLogD(@"Request to end video service ACKed on transport %@", protocol.transport);
 
     if (![self.videoStreamStateMachine.currentState isEqualToEnum:SDLVideoStreamManagerStateShuttingDown]) {
         SDLLogW(@"wrong state %@, skip", self.videoStreamStateMachine.currentState);
@@ -595,7 +603,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateStopped];
 }
 
-- (void)handleProtocolEndServiceNAKMessage:(SDLProtocolMessage *)endServiceNAK {
+- (void)protocol:(SDLProtocol *)protocol didReceiveEndServiceNAK:(SDLProtocolMessage *)endServiceNAK {
     if (endServiceNAK.header.serviceType != SDLServiceTypeVideo) { return; }
 
     if (![self.videoStreamStateMachine.currentState isEqualToEnum:SDLVideoStreamManagerStateShuttingDown]) {
@@ -604,7 +612,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     }
 
     SDLControlFramePayloadNak *nakPayload = [[SDLControlFramePayloadNak alloc] initWithData:endServiceNAK.payload];
-    SDLLogE(@"Request to end video service NAKed with payload: %@", nakPayload);
+    SDLLogE(@"Request to end video service NAKed on transport %@, with payload: %@", protocol.transport, nakPayload);
 
     /// Core will NAK the video end service control frame if video is not streaming or if video is streaming but the HMI does not recognize that video is streaming.
     [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateStopped];
