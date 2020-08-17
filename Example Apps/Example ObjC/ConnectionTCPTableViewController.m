@@ -15,7 +15,7 @@
 #import "SimpleAppViewController.h"
 #import "GameViewController.h"
 #import "SDLStreamingMediaDelegate.h"
-#import "SDLProxy.h"
+//#import "SDLProxy.h"
 #import "VideoStreamSettings.h"
 
 

@@ -408,7 +408,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param hmiLanguage The head unit's current HMI language
 /// @return A SDLLifecycleConfigurationUpdate object
 - (nullable SDLLifecycleConfigurationUpdate *)managerShouldUpdateLifecycleToLanguage:(SDLLanguage)language hmiLanguage:(SDLLanguage)hmiLanguage {
->>>>>>> develop
     SDLLifecycleConfigurationUpdate *update = [[SDLLifecycleConfigurationUpdate alloc] init];
 
     if ([hmiLanguage isEqualToEnum:SDLLanguageEnUs]) {

@@ -205,7 +205,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 - (void)startWithProtocol:(SDLProtocol *)protocol {
     SDLLogD(@"Starting with protocol: %@", protocol);
     _protocol = protocol;
-    [self.protocol addListener:self];
+    [self.protocol addDelegate:self];
     [self.focusableItemManager start];
 
     // attempt to start streaming since we may already have necessary conditions met
@@ -225,7 +225,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     [self.focusableItemManager stop];
     _connectedVehicleMake = nil;
 
-    [self.protocol removeListener:self];
+    [self.protocol removeDelegate:self];
     _protocol = nil;
     [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateStopped];
 }
