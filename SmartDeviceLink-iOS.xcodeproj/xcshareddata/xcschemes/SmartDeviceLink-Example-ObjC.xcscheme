@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5D4019AE1A76EC350006B0C2"
-               BuildableName = "SDL0296_VidStr.app"
+               BuildableName = "SDL Example.app"
                BlueprintName = "SmartDeviceLink-Example-ObjC"
                ReferencedContainer = "container:SmartDeviceLink-iOS.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5D4019AE1A76EC350006B0C2"
-            BuildableName = "SDL0296_VidStr.app"
+            BuildableName = "SDL Example.app"
             BlueprintName = "SmartDeviceLink-Example-ObjC"
             ReferencedContainer = "container:SmartDeviceLink-iOS.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5D4019AE1A76EC350006B0C2"
-            BuildableName = "SDL0296_VidStr.app"
+            BuildableName = "SDL Example.app"
             BlueprintName = "SmartDeviceLink-Example-ObjC"
             ReferencedContainer = "container:SmartDeviceLink-iOS.xcodeproj">
          </BuildableReference>
