@@ -4248,7 +4248,6 @@
 		5D0218EB1A8E795700D1BF62 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				B3476E1D247471580025DC99 /* VideoTest */,
 				5D1FF2CF2130466D000EB9B4 /* LaunchScreen.xib */,
 				5D0218EC1A8E796100D1BF62 /* Connection */,
 			);
@@ -6720,28 +6719,17 @@
 		B32B7C6724EB936F009670C1 /* Example Video ObjC */ = {
 			isa = PBXGroup;
 			children = (
+				B3CD23D424EBB30700F76A61 /* UI */,
+				B3CD23D324EBB2AC00F76A61 /* Supporting Files */,
 				B32B7C8824EBA0DF009670C1 /* Resources */,
-				B32B7C7C24EB9DD7009670C1 /* SimpleRootView.h */,
-				B32B7C7F24EB9DD7009670C1 /* SimpleRootView.m */,
 				B32B7C8124EB9DD8009670C1 /* TouchModel.h */,
 				B32B7C8024EB9DD8009670C1 /* TouchModel.m */,
-				B32B7C7A24EB99A3009670C1 /* ConnectionContainerViewController.h */,
-				B32B7C7924EB99A3009670C1 /* ConnectionContainerViewController.m */,
-				B32B7C8B24EBA275009670C1 /* ConnectionIAPTableViewController.h */,
-				B32B7C8C24EBA275009670C1 /* ConnectionIAPTableViewController.m */,
-				B32B7C7424EB98A3009670C1 /* ConnectionTCPTableViewController.h */,
-				B32B7C7324EB98A3009670C1 /* ConnectionTCPTableViewController.m */,
 				B32B7C6D24EB9743009670C1 /* SDLTCPConfig.h */,
 				B32B7C6F24EB9744009670C1 /* SDLTCPConfig.m */,
 				B32B7C6B24EB9701009670C1 /* ProxyManager.h */,
 				B32B7C6A24EB9701009670C1 /* ProxyManager.m */,
 				B32B7C7024EB9744009670C1 /* VideoStreamSettings.h */,
 				B32B7C6E24EB9743009670C1 /* VideoStreamSettings.m */,
-				B32B7C7624EB9900009670C1 /* VideoStreamingSettingsViewController.h */,
-				B32B7C7724EB9900009670C1 /* VideoStreamingSettingsViewController.m */,
-				B32B7C8624EB9E4A009670C1 /* VideoSourceViewController.h */,
-				B32B7C8524EB9E4A009670C1 /* VideoSourceViewController.m */,
-				B32B7C6824EB936F009670C1 /* SmartDeviceLink-Example-Video-ObjC.plist */,
 			);
 			name = "Example Video ObjC";
 			path = "Example Apps/Example Video ObjC";
@@ -6773,13 +6761,32 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B3476E1D247471580025DC99 /* VideoTest */ = {
+		B3CD23D324EBB2AC00F76A61 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B32B7C6824EB936F009670C1 /* SmartDeviceLink-Example-Video-ObjC.plist */,
 			);
-			name = VideoTest;
-			path = "Example Apps/Example ObjC/UI/VideoTest";
-			sourceTree = SOURCE_ROOT;
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B3CD23D424EBB30700F76A61 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				B32B7C7A24EB99A3009670C1 /* ConnectionContainerViewController.h */,
+				B32B7C7924EB99A3009670C1 /* ConnectionContainerViewController.m */,
+				B32B7C8B24EBA275009670C1 /* ConnectionIAPTableViewController.h */,
+				B32B7C8C24EBA275009670C1 /* ConnectionIAPTableViewController.m */,
+				B32B7C7424EB98A3009670C1 /* ConnectionTCPTableViewController.h */,
+				B32B7C7324EB98A3009670C1 /* ConnectionTCPTableViewController.m */,
+				B32B7C7C24EB9DD7009670C1 /* SimpleRootView.h */,
+				B32B7C7F24EB9DD7009670C1 /* SimpleRootView.m */,
+				B32B7C7624EB9900009670C1 /* VideoStreamingSettingsViewController.h */,
+				B32B7C7724EB9900009670C1 /* VideoStreamingSettingsViewController.m */,
+				B32B7C8624EB9E4A009670C1 /* VideoSourceViewController.h */,
+				B32B7C8524EB9E4A009670C1 /* VideoSourceViewController.m */,
+			);
+			name = UI;
+			sourceTree = "<group>";
 		};
 		DA1166D71D14601C00438CEA /* Touches */ = {
 			isa = PBXGroup;
