@@ -2,136 +2,16 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Test UI app-->
-        <scene sceneID="iuI-7D-x0R">
-            <objects>
-                <viewController storyboardIdentifier="idTestUIAppViewController" title="Test UI app" id="Hsq-Z0-fjm" customClass="TestUIAppViewController" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="aQ7-UZ-Vsd">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YpC-6N-2oc" userLabel="display view">
-                                <rect key="frame" x="10" y="10" width="300" height="450"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6fY-J4-opr" userLabel="Sub-1 (LT)">
-                                        <rect key="frame" x="5" y="5" width="50" height="50"/>
-                                        <color key="backgroundColor" systemColor="systemPinkColor" red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="6oN-eG-IdT"/>
-                                            <constraint firstAttribute="height" constant="50" id="fcY-Jm-t2x"/>
-                                        </constraints>
-                                        <string key="text">This is an overview of how SmartDeviceLink (SDL) works. It will go through higher level discussions about certain aspects of SDL to give an intro level of understanding. For more general information on SmartDeviceLink (SDL) as a technology, there is a white-paper available here.
-SmartDeviceLink is a connectivity protocol and set of associated libraries that allow third-party applications to communicate with cars. This allows drivers to safely access the content they want through their vehicle.
-There are different components to SDL that make everything work. The following diagram shows how some of those pieces are connected.</string>
-                                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JmY-MF-9O1" userLabel="Sub-2 (RT)">
-                                        <rect key="frame" x="245" y="5" width="50" height="50"/>
-                                        <color key="backgroundColor" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="QwI-dJ-2fu"/>
-                                            <constraint firstAttribute="height" constant="50" id="b00-Tt-3i3"/>
-                                        </constraints>
-                                        <string key="text">This is an overview of how SmartDeviceLink (SDL) works. It will go through higher level discussions about certain aspects of SDL to give an intro level of understanding. For more general information on SmartDeviceLink (SDL) as a technology, there is a white-paper available here.
-SmartDeviceLink is a connectivity protocol and set of associated libraries that allow third-party applications to communicate with cars. This allows drivers to safely access the content they want through their vehicle.
-There are different components to SDL that make everything work. The following diagram shows how some of those pieces are connected.</string>
-                                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B7P-Jy-76s" userLabel="Lab-3 (RB)">
-                                        <rect key="frame" x="245" y="395" width="50" height="50"/>
-                                        <color key="backgroundColor" systemColor="systemPurpleColor" red="0.68627450980000004" green="0.32156862749999998" blue="0.87058823529999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="ZSS-WH-lDG"/>
-                                            <constraint firstAttribute="height" constant="50" id="eep-Lt-Alt"/>
-                                        </constraints>
-                                        <string key="text">This is an overview of how SmartDeviceLink (SDL) works. It will go through higher level discussions about certain aspects of SDL to give an intro level of understanding. For more general information on SmartDeviceLink (SDL) as a technology, there is a white-paper available here.
-SmartDeviceLink is a connectivity protocol and set of associated libraries that allow third-party applications to communicate with cars. This allows drivers to safely access the content they want through their vehicle.
-There are different components to SDL that make everything work. The following diagram shows how some of those pieces are connected.</string>
-                                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6FH-6a-VDP" userLabel="Lab-4 (LB)">
-                                        <rect key="frame" x="5" y="395" width="50" height="50"/>
-                                        <color key="backgroundColor" systemColor="systemTealColor" red="0.35294117650000001" green="0.7843137255" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="GLW-6Q-9rK"/>
-                                            <constraint firstAttribute="width" constant="50" id="xEc-ex-OWB"/>
-                                        </constraints>
-                                        <string key="text">This is an overview of how SmartDeviceLink (SDL) works. It will go through higher level discussions about certain aspects of SDL to give an intro level of understanding. For more general information on SmartDeviceLink (SDL) as a technology, there is a white-paper available here.
-SmartDeviceLink is a connectivity protocol and set of associated libraries that allow third-party applications to communicate with cars. This allows drivers to safely access the content they want through their vehicle.
-There are different components to SDL that make everything work. The following diagram shows how some of those pieces are connected.</string>
-                                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="Dee-Us-sqx">
-                                        <rect key="frame" x="131.5" y="206.5" width="37" height="37"/>
-                                        <color key="color" cocoaTouchSystemColor="darkTextColor"/>
-                                    </activityIndicatorView>
-                                </subviews>
-                                <color key="backgroundColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstItem="6fY-J4-opr" firstAttribute="leading" secondItem="YpC-6N-2oc" secondAttribute="leading" constant="5" id="9l8-Tl-Csb"/>
-                                    <constraint firstAttribute="trailing" secondItem="B7P-Jy-76s" secondAttribute="trailing" priority="750" constant="5" id="Ahm-fF-lmq"/>
-                                    <constraint firstItem="6FH-6a-VDP" firstAttribute="leading" secondItem="YpC-6N-2oc" secondAttribute="leading" constant="5" id="Ckt-UO-4I4"/>
-                                    <constraint firstAttribute="bottom" secondItem="B7P-Jy-76s" secondAttribute="bottom" priority="750" constant="5" id="JLE-bR-X9A"/>
-                                    <constraint firstAttribute="trailing" secondItem="JmY-MF-9O1" secondAttribute="trailing" priority="750" constant="5" id="LqK-xj-mCw"/>
-                                    <constraint firstAttribute="height" constant="450" id="OtQ-8k-485" userLabel="display height"/>
-                                    <constraint firstItem="Dee-Us-sqx" firstAttribute="centerY" secondItem="YpC-6N-2oc" secondAttribute="centerY" id="Xxx-Ht-bZp"/>
-                                    <constraint firstItem="6fY-J4-opr" firstAttribute="top" secondItem="YpC-6N-2oc" secondAttribute="top" constant="5" id="dBS-Di-mRh"/>
-                                    <constraint firstAttribute="bottom" secondItem="6FH-6a-VDP" secondAttribute="bottom" priority="750" constant="5" id="nfp-aX-Xqp"/>
-                                    <constraint firstItem="Dee-Us-sqx" firstAttribute="centerX" secondItem="YpC-6N-2oc" secondAttribute="centerX" id="sjC-3r-ByV"/>
-                                    <constraint firstItem="JmY-MF-9O1" firstAttribute="top" secondItem="YpC-6N-2oc" secondAttribute="top" constant="5" id="uxi-DE-lXh"/>
-                                    <constraint firstAttribute="width" constant="300" id="wet-vQ-1wB" userLabel="display width"/>
-                                </constraints>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="YpC-6N-2oc" firstAttribute="top" secondItem="esS-VV-iMO" secondAttribute="top" constant="10" id="2ay-Z0-Y3t" userLabel="display y"/>
-                            <constraint firstItem="YpC-6N-2oc" firstAttribute="leading" secondItem="esS-VV-iMO" secondAttribute="leading" constant="10" id="LKv-vf-kJx" userLabel="display x"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="esS-VV-iMO"/>
-                    </view>
-                    <connections>
-                        <outlet property="displayConstraintH" destination="OtQ-8k-485" id="l0K-Jp-Gbb"/>
-                        <outlet property="displayConstraintW" destination="wet-vQ-1wB" id="L8R-BT-GM6"/>
-                        <outlet property="displayConstraintX" destination="LKv-vf-kJx" id="Sfc-0x-D6U"/>
-                        <outlet property="displayConstraintY" destination="2ay-Z0-Y3t" id="ccZ-ws-5U1"/>
-                        <outlet property="displayView" destination="YpC-6N-2oc" id="un0-Jd-ppS"/>
-                        <outlet property="spinner" destination="Dee-Us-sqx" id="UoU-8o-1JG"/>
-                        <outlet property="subview1" destination="6fY-J4-opr" id="pfm-30-XFr"/>
-                        <outlet property="subview2" destination="JmY-MF-9O1" id="v75-c8-x1W"/>
-                        <outlet property="subview3" destination="B7P-Jy-76s" id="pbH-L2-SEa"/>
-                        <outlet property="subview4" destination="6FH-6a-VDP" id="hqS-1g-0gJ"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="tCN-TA-ZPI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="135" y="-174.29577464788733"/>
-        </scene>
-        <!--VideoWindow-->
-        <scene sceneID="hLm-cg-tNj">
-            <objects>
-                <avPlayerViewController storyboardIdentifier="idVideoWindow" title="VideoWindow" videoGravity="AVLayerVideoGravityResizeAspect" id="ReI-EM-aoQ" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="fBX-4X-Xn3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="823" y="-174"/>
-        </scene>
-        <!--Simple VC-->
+        <!--Video Source-->
         <scene sceneID="sXf-8T-TkQ">
             <objects>
-                <viewController storyboardIdentifier="idSimpleAppViewController" title="Simple VC" id="afi-yv-teE" customClass="SimpleAppViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="idVideoSourceViewController" title="Video Source" id="afi-yv-teE" customClass="VideoSourceViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ro5-P9-ro3" customClass="SimpleRootView">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

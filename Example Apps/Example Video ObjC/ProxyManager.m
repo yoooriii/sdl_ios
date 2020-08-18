@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
     lifecycleConfiguration.ttsName = [SDLTTSChunk textChunksFromString:ExampleAppName];
     lifecycleConfiguration.language = SDLLanguageEnUs;
     lifecycleConfiguration.languagesSupported = @[SDLLanguageEnUs, SDLLanguageFrCa, SDLLanguageEsMx];
-    lifecycleConfiguration.appType = SDLAppHMITypeNavigation;
+    lifecycleConfiguration.appType = SDLAppHMITypeProjection;
 
     SDLRGBColor *green = [[SDLRGBColor alloc] initWithRed:126 green:188 blue:121];
     SDLRGBColor *white = [[SDLRGBColor alloc] initWithRed:249 green:251 blue:254];
@@ -136,28 +136,22 @@ NS_ASSUME_NONNULL_BEGIN
     lifecycleConfiguration.nightColorScheme = [[SDLTemplateColorScheme alloc] initWithPrimaryRGBColor:green secondaryRGBColor:grey backgroundRGBColor:darkGrey];
 
     SDLLockScreenConfiguration *lockScreenConfiguration = [SDLLockScreenConfiguration enabledConfigurationWithAppIcon:[UIImage imageNamed:ExampleAppLogoName] backgroundColor:nil];
-    SDLConfiguration *config = [[SDLConfiguration alloc] initWithLifecycle:lifecycleConfiguration lockScreen:lockScreenConfiguration logging:[self.class sdlex_logConfiguration] fileManager:[SDLFileManagerConfiguration defaultConfiguration] encryption:[SDLEncryptionConfiguration defaultConfiguration]];
 
 
-
-
-    SDLEncryptionConfiguration *encryptionConfig = [SDLEncryptionConfiguration defaultConfiguration];//[[SDLEncryptionConfiguration alloc] initWithSecurityManagers:@[OEMSecurityManager.self] delegate:self];
     SDLStreamingMediaConfiguration *streamingConfig = nil;
-//    SDLStreamingMediaConfiguration *streamingConfig = [SDLStreamingMediaConfiguration insecureConfiguration];
-
-    if (self.videoVC) {
-        streamingConfig = [SDLStreamingMediaConfiguration autostreamingInsecureConfigurationWithInitialViewController:self.videoVC];
-        streamingConfig.delegate = self.videoVC;
+    if (self.videoSourceViewController) {
+        streamingConfig = [SDLStreamingMediaConfiguration autostreamingInsecureConfigurationWithInitialViewController:self.videoSourceViewController];
+        streamingConfig.delegate = self.videoSourceViewController;
         streamingConfig.supportedPortraitStreamingRange = self.videoStreamSettings.supportedPortraitStreamingRange;
         streamingConfig.supportedLandscapeStreamingRange = self.videoStreamSettings.supportedLandscapeStreamingRange;
     } else {
         streamingConfig = [SDLStreamingMediaConfiguration insecureConfiguration];
     }
 
-    SDLConfiguration *config2 = [[SDLConfiguration alloc] initWithLifecycle:lifecycleConfiguration lockScreen:lockScreenConfiguration logging:[self.class sdlex_logConfiguration] streamingMedia:streamingConfig fileManager:[SDLFileManagerConfiguration defaultConfiguration] encryption:encryptionConfig];
+    SDLEncryptionConfiguration *encryptionConfig = [SDLEncryptionConfiguration defaultConfiguration];
+    SDLConfiguration *config = [[SDLConfiguration alloc] initWithLifecycle:lifecycleConfiguration lockScreen:lockScreenConfiguration logging:[self.class sdlex_logConfiguration] streamingMedia:streamingConfig fileManager:[SDLFileManagerConfiguration defaultConfiguration] encryption:encryptionConfig];
 
-
-    self.sdlManager = [[SDLManager alloc] initWithConfiguration:config2 delegate:self];
+    self.sdlManager = [[SDLManager alloc] initWithConfiguration:config delegate:self];
     self.sdlManager.sdlMsgVersionString = self.videoStreamSettings.SDLVersion;
 
     __weak typeof (self) weakSelf = self;
@@ -177,8 +171,8 @@ NS_ASSUME_NONNULL_BEGIN
         [weakSelf sdlex_showInitialData];
 
         //#Touch_Input, decide who is the delegate
-        if ([weakSelf.videoVC conformsToProtocol:@protocol(SDLTouchManagerDelegate)]) {
-            weakSelf.sdlManager.streamManager.touchManager.touchEventDelegate = (id<SDLTouchManagerDelegate>) weakSelf.videoVC;
+        if ([weakSelf.videoSourceViewController conformsToProtocol:@protocol(SDLTouchManagerDelegate)]) {
+            weakSelf.sdlManager.streamManager.touchManager.touchEventDelegate = (id<SDLTouchManagerDelegate>) weakSelf.videoSourceViewController;
         } else {
             weakSelf.sdlManager.streamManager.touchManager.touchEventDelegate = self;
         }

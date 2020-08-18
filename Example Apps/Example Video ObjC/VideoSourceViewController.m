@@ -1,12 +1,11 @@
 //
-//  SimpleAppViewController.m
+//  VideoSourceViewController.m
 //  SmartDeviceLink-iOS
 //
-//  Created by Leonid Lokhmatov on 5/25/20.
 //  Copyright © 2018 Luxoft. All rights reserved
 //
 
-#import "SimpleAppViewController.h"
+#import "VideoSourceViewController.h"
 #import "SDLTouchManagerDelegate.h"
 #import "SimpleRootView.h"
 #import "TouchModel.h"
@@ -15,20 +14,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-@interface SimpleAppViewController ()
+@interface VideoSourceViewController ()
 @property (strong, nonatomic, nullable) IBOutletCollection(UIButton) NSArray *buttons;
 @end
 
 
-@interface SimpleAppViewController (SDLTouchManagerDelegate) <SDLTouchManagerDelegate>
+@interface VideoSourceViewController (SDLTouchManagerDelegate) <SDLTouchManagerDelegate>
 @end
 
 
-@implementation SimpleAppViewController
+@implementation VideoSourceViewController
 
-+ (SimpleAppViewController*)createViewController {
-    UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"ExampleApps" bundle:nil];
-    SimpleAppViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"idSimpleAppViewController"];
++ (VideoSourceViewController*)createInstance {
+    UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"ExampleVideoApp" bundle:nil];
+    VideoSourceViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"idVideoSourceViewController"];
     return vc;
 }
 
@@ -61,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 //#Touch_Input:
-@implementation SimpleAppViewController (SDLTouchManagerDelegate)
+@implementation VideoSourceViewController (SDLTouchManagerDelegate)
 
 static const CGFloat MinSz = -8.0;
 

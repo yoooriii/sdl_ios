@@ -1,8 +1,7 @@
 //
-//  SimpleAppViewController.h
+//  VideoSourceViewController.h
 //  SmartDeviceLink-iOS
 //
-//  Created by Leonid Lokhmatov on 5/25/20.
 //  Copyright © 2018 Luxoft. All rights reserved
 //
 
@@ -11,9 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SimpleAppViewController<SDLStreamingMediaDelegate> : UIViewController
+@interface VideoSourceViewController<SDLStreamingMediaDelegate> : UIViewController
 
-+ (instancetype)createViewController;
++ (instancetype)createInstance;
 
 @end
 
