@@ -2,7 +2,6 @@
 //  SDLTCPConfig.m
 //  SmartDeviceLink-Example-ObjC
 //
-//  Created by Leonid Lokhmatov on 5/19/20.
 //  Copyright © 2020 Luxoft. All rights reserved
 //
 

@@ -2,7 +2,6 @@
 //  VideoStreamSettings.m
 //  SmartDeviceLink-Example-ObjC
 //
-//  Created by Leonid Lokhmatov on 7/28/20.
 //  Copyright © 2020 Luxoft. All rights reserved
 //
 
