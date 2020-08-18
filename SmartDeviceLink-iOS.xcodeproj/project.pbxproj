@@ -1620,6 +1620,7 @@
 		B38D8E61249FE28500B977D0 /* SDLCapacityUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = B38D8E5F249FE28500B977D0 /* SDLCapacityUnit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B38D8E62249FE28500B977D0 /* SDLCapacityUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = B38D8E60249FE28500B977D0 /* SDLCapacityUnit.m */; };
 		B38D8E8224A1F53500B977D0 /* SDLCapacityUnitSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = B38D8E8124A1F53500B977D0 /* SDLCapacityUnitSpec.m */; };
+		B3CD23D724EBB42A00F76A61 /* ProxyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B3CD23D624EBB42A00F76A61 /* ProxyManager.m */; };
 		B3E049412492237F00D8CBE1 /* SDLSupportedStreamingRange.h in Headers */ = {isa = PBXBuildFile; fileRef = B3E0493F2492237F00D8CBE1 /* SDLSupportedStreamingRange.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B3F7918324E062C200DB5CAF /* SDLGetVehicleDataSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 162E824C1A9BDE8A00906325 /* SDLGetVehicleDataSpec.m */; };
 		DA0C46AD1DCD35080001F2A8 /* SDLRPCParameterNames.m in Sources */ = {isa = PBXBuildFile; fileRef = DA0C46AC1DCD35080001F2A8 /* SDLRPCParameterNames.m */; };
@@ -3460,6 +3461,8 @@
 		B38D8E5F249FE28500B977D0 /* SDLCapacityUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDLCapacityUnit.h; sourceTree = "<group>"; };
 		B38D8E60249FE28500B977D0 /* SDLCapacityUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDLCapacityUnit.m; sourceTree = "<group>"; };
 		B38D8E8124A1F53500B977D0 /* SDLCapacityUnitSpec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SDLCapacityUnitSpec.m; sourceTree = "<group>"; };
+		B3CD23D524EBB42A00F76A61 /* ProxyManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProxyManager.h; path = "../Example Apps/Example ObjC/ProxyManager.h"; sourceTree = "<group>"; };
+		B3CD23D624EBB42A00F76A61 /* ProxyManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ProxyManager.m; path = "Example Apps/Example ObjC/ProxyManager.m"; sourceTree = SOURCE_ROOT; };
 		B3E0493F2492237F00D8CBE1 /* SDLSupportedStreamingRange.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SDLSupportedStreamingRange.h; sourceTree = "<group>"; };
 		B3E049402492237F00D8CBE1 /* SDLSupportedStreamingRange.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SDLSupportedStreamingRange.m; sourceTree = "<group>"; };
 		B3E0494324923AF800D8CBE1 /* SDLStreamingMediaDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SDLStreamingMediaDelegate.h; sourceTree = "<group>"; };
@@ -4620,6 +4623,8 @@
 				5D1FF29421304513000EB9B4 /* MenuManager.m */,
 				5D1FF29321304513000EB9B4 /* PerformInteractionManager.h */,
 				5D1FF29121304513000EB9B4 /* PerformInteractionManager.m */,
+				B3CD23D524EBB42A00F76A61 /* ProxyManager.h */,
+				B3CD23D624EBB42A00F76A61 /* ProxyManager.m */,
 				5D1FF29821304514000EB9B4 /* RPCPermissionsManager.h */,
 				5D1FF29221304513000EB9B4 /* RPCPermissionsManager.m */,
 				889E7BB0249D0877002E4BE1 /* SubscribeButtonManager.h */,
@@ -7769,6 +7774,7 @@
 			files = (
 				5D1FF2CA2130463F000EB9B4 /* AppDelegate.m in Sources */,
 				5D1FF2BA21304581000EB9B4 /* ConnectionTCPTableViewController.m in Sources */,
+				B3CD23D724EBB42A00F76A61 /* ProxyManager.m in Sources */,
 				5D1FF2B921304581000EB9B4 /* ConnectionContainerViewController.m in Sources */,
 				5D1FF29D21304515000EB9B4 /* RPCPermissionsManager.m in Sources */,
 				5D1FF2A121304515000EB9B4 /* VehicleDataManager.m in Sources */,
