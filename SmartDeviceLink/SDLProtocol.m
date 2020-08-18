@@ -273,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self sdl_sendDataToTransport:message.data onService:SDLServiceTypeControl];
 }
 
-#pragma mark - Register/Unregister Listeners
+#pragma mark - Register/Unregister Delegates
 
 - (void)addDelegate:(id<SDLProtocolDelegate>)delegate {
     @synchronized(self.protocolDelegateTable) {
