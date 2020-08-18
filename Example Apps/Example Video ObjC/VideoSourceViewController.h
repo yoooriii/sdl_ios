@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VideoSourceViewController<SDLStreamingMediaDelegate> : UIViewController
+@interface VideoSourceViewController : UIViewController <SDLStreamingMediaDelegate>
 
 + (instancetype)createInstance;
 

@@ -7,7 +7,7 @@
 
 #import "VideoSourceViewController.h"
 #import "SDLTouchManagerDelegate.h"
-#import "SimpleRootView.h"
+#import "VideoSourceView.h"
 #import "TouchModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,13 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@interface VideoSourceViewController (SDLTouchManagerDelegate) <SDLTouchManagerDelegate>
-@end
-
-
 @implementation VideoSourceViewController
 
-+ (VideoSourceViewController*)createInstance {
++ (VideoSourceViewController *)createInstance {
     UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"ExampleVideoApp" bundle:nil];
     VideoSourceViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"idVideoSourceViewController"];
     return vc;
@@ -39,8 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (SimpleRootView *)rootView {
-    return (SimpleRootView *)self.view;
+- (VideoSourceView *)rootView {
+    return (VideoSourceView *)self.view;
 }
 
 - (void)updateOnTouchButton:(UIView * _Nullable)viewCandidate {
@@ -54,6 +50,16 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         }
     }
+}
+
+#pragma mark - SDLStreamingMediaDelegate
+
+- (void)videoStreamingSizeDidUpdate:(CGSize)displaySize {
+    NSLog(@"%s: %@", __PRETTY_FUNCTION__, NSStringFromCGSize(displaySize));
+}
+
+- (void)videoStreamingSizeDoesNotMatch {
+    NSLog(@"%s", __PRETTY_FUNCTION__);
 }
 
 @end
@@ -122,16 +128,6 @@ static const CGFloat MinSz = -8.0;
 
 - (void)touchManager:(SDLTouchManager *)manager pinchCanceledAtCenterPoint:(CGPoint)point {
     NSLog(@"%s: %@", __PRETTY_FUNCTION__, NSStringFromCGPoint(point));
-}
-
-#pragma mark - SDLStreamingMediaDelegate
-
-- (void)videoStreamingSizeDidUpdate:(CGSize)displaySize {
-    NSLog(@"%s: %@", __PRETTY_FUNCTION__, NSStringFromCGSize(displaySize));
-}
-
-- (void)videoStreamingSizeDoesNotMatch {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
 }
 
 @end

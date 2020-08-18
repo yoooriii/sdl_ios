@@ -1601,7 +1601,7 @@
 		B32B7C7524EB98A3009670C1 /* ConnectionTCPTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B32B7C7324EB98A3009670C1 /* ConnectionTCPTableViewController.m */; };
 		B32B7C7824EB9900009670C1 /* VideoStreamingSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B32B7C7724EB9900009670C1 /* VideoStreamingSettingsViewController.m */; };
 		B32B7C7B24EB99A4009670C1 /* ConnectionContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B32B7C7924EB99A3009670C1 /* ConnectionContainerViewController.m */; };
-		B32B7C8324EB9DD8009670C1 /* SimpleRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = B32B7C7F24EB9DD7009670C1 /* SimpleRootView.m */; };
+		B32B7C8324EB9DD8009670C1 /* VideoSourceView.m in Sources */ = {isa = PBXBuildFile; fileRef = B32B7C7F24EB9DD7009670C1 /* VideoSourceView.m */; };
 		B32B7C8424EB9DD8009670C1 /* TouchModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B32B7C8024EB9DD8009670C1 /* TouchModel.m */; };
 		B32B7C8724EB9E4B009670C1 /* VideoSourceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B32B7C8524EB9E4A009670C1 /* VideoSourceViewController.m */; };
 		B32B7C8A24EBA0DF009670C1 /* ExampleVideoApp.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B32B7C8924EBA0DF009670C1 /* ExampleVideoApp.storyboard */; };
@@ -3440,8 +3440,8 @@
 		B32B7C7724EB9900009670C1 /* VideoStreamingSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoStreamingSettingsViewController.m; sourceTree = "<group>"; };
 		B32B7C7924EB99A3009670C1 /* ConnectionContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectionContainerViewController.m; sourceTree = "<group>"; };
 		B32B7C7A24EB99A3009670C1 /* ConnectionContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionContainerViewController.h; sourceTree = "<group>"; };
-		B32B7C7C24EB9DD7009670C1 /* SimpleRootView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleRootView.h; sourceTree = "<group>"; };
-		B32B7C7F24EB9DD7009670C1 /* SimpleRootView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleRootView.m; sourceTree = "<group>"; };
+		B32B7C7C24EB9DD7009670C1 /* VideoSourceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoSourceView.h; sourceTree = "<group>"; };
+		B32B7C7F24EB9DD7009670C1 /* VideoSourceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoSourceView.m; sourceTree = "<group>"; };
 		B32B7C8024EB9DD8009670C1 /* TouchModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchModel.m; sourceTree = "<group>"; };
 		B32B7C8124EB9DD8009670C1 /* TouchModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchModel.h; sourceTree = "<group>"; };
 		B32B7C8524EB9E4A009670C1 /* VideoSourceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoSourceViewController.m; sourceTree = "<group>"; };
@@ -6783,8 +6783,8 @@
 				B32B7C8C24EBA275009670C1 /* ConnectionIAPTableViewController.m */,
 				B32B7C7424EB98A3009670C1 /* ConnectionTCPTableViewController.h */,
 				B32B7C7324EB98A3009670C1 /* ConnectionTCPTableViewController.m */,
-				B32B7C7C24EB9DD7009670C1 /* SimpleRootView.h */,
-				B32B7C7F24EB9DD7009670C1 /* SimpleRootView.m */,
+				B32B7C7C24EB9DD7009670C1 /* VideoSourceView.h */,
+				B32B7C7F24EB9DD7009670C1 /* VideoSourceView.m */,
 				B32B7C7624EB9900009670C1 /* VideoStreamingSettingsViewController.h */,
 				B32B7C7724EB9900009670C1 /* VideoStreamingSettingsViewController.m */,
 				B32B7C8624EB9E4A009670C1 /* VideoSourceViewController.h */,
@@ -8890,7 +8890,7 @@
 				B32B7C7824EB9900009670C1 /* VideoStreamingSettingsViewController.m in Sources */,
 				B32B7C8724EB9E4B009670C1 /* VideoSourceViewController.m in Sources */,
 				B32B7C4B24EB91DC009670C1 /* MenuManager.m in Sources */,
-				B32B7C8324EB9DD8009670C1 /* SimpleRootView.m in Sources */,
+				B32B7C8324EB9DD8009670C1 /* VideoSourceView.m in Sources */,
 				B32B7C4C24EB91DC009670C1 /* AppConstants.m in Sources */,
 				B32B7C4E24EB91DC009670C1 /* PerformInteractionManager.m in Sources */,
 				B32B7C5024EB91DC009670C1 /* TextValidator.m in Sources */,

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -12,15 +10,15 @@
         <scene sceneID="sXf-8T-TkQ">
             <objects>
                 <viewController storyboardIdentifier="idVideoSourceViewController" title="Video Source" id="afi-yv-teE" customClass="VideoSourceViewController" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="ro5-P9-ro3" customClass="SimpleRootView">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                    <view key="view" contentMode="scaleToFill" id="ro5-P9-ro3" customClass="VideoSourceView">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ey4-1z-FIR" userLabel="display view">
-                                <rect key="frame" x="10" y="10" width="300" height="548"/>
+                                <rect key="frame" x="10" y="10" width="580" height="580"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TJT-oW-v24" userLabel="All text area">
-                                        <rect key="frame" x="9" y="9" width="282" height="530"/>
+                                        <rect key="frame" x="9" y="9" width="562" height="562"/>
                                         <color key="backgroundColor" systemColor="systemYellowColor" red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <string key="text">In the United States of America, there is a popular saying that "there are few things as American as apple pie".[9] In the United States, pie and especially apple pie, became "bound up in American mythology" to the point that in 1902, The New York Times asserted that "Pie is the food of the heroic" and stated that "No pie-eating people can ever be permanently vanquished".[2]
 
@@ -59,7 +57,7 @@ Another factor that decreased the popularity of pies was industrialization and i
                                         </state>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qxE-TV-gZz">
-                                        <rect key="frame" x="245" y="493" width="50" height="50"/>
+                                        <rect key="frame" x="525" y="525" width="50" height="50"/>
                                         <color key="backgroundColor" systemColor="systemBrownColor" red="0.63529411759999999" green="0.51764705879999995" blue="0.36862745099999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="Fa8-g9-ocy"/>
@@ -80,7 +78,7 @@ Another factor that decreased the popularity of pies was industrialization and i
                                         </state>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4JX-Pj-iKW">
-                                        <rect key="frame" x="245" y="5" width="50" height="50"/>
+                                        <rect key="frame" x="525" y="5" width="50" height="50"/>
                                         <color key="backgroundColor" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="A61-gw-DKz"/>
@@ -101,11 +99,11 @@ Another factor that decreased the popularity of pies was industrialization and i
                                         </state>
                                     </button>
                                     <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="heO-VY-VjL">
-                                        <rect key="frame" x="131.5" y="255.5" width="37" height="37"/>
+                                        <rect key="frame" x="271.5" y="271.5" width="37" height="37"/>
                                         <color key="color" cocoaTouchSystemColor="darkTextColor"/>
                                     </activityIndicatorView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TNH-7i-LBE">
-                                        <rect key="frame" x="5" y="493" width="50" height="50"/>
+                                        <rect key="frame" x="5" y="525" width="50" height="50"/>
                                         <color key="backgroundColor" systemColor="systemTealColor" red="0.35294117650000001" green="0.7843137255" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="A64-hz-7vL"/>

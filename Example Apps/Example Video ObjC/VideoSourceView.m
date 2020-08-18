@@ -5,14 +5,14 @@
 //  Copyright © 2018 Luxoft. All rights reserved
 //
 
-#import "SimpleRootView.h"
+#import "VideoSourceView.h"
 
-@interface SimpleRootView ()
+@interface VideoSourceView ()
 @property (strong, nonatomic, nullable) IBOutlet UIView *singleTapView;
 @property (strong, nonatomic, nullable) IBOutlet UIView *doubleTapView;
 @end
 
-@implementation SimpleRootView
+@implementation VideoSourceView
 
 - (void)awakeFromNib {
     [super awakeFromNib];

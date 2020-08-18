@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SimpleRootView : UIView
+@interface VideoSourceView : UIView
 @property (strong, nonatomic, nullable) TouchModel *singleTap;
 @property (strong, nonatomic, nullable) TouchModel *doubleTap;
 @end
