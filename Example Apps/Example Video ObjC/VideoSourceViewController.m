@@ -2,7 +2,7 @@
 //  VideoSourceViewController.m
 //  SmartDeviceLink-iOS
 //
-//  Copyright © 2018 Luxoft. All rights reserved
+//  Copyright © 2020 Luxoft. All rights reserved
 //
 
 #import "VideoSourceViewController.h"
