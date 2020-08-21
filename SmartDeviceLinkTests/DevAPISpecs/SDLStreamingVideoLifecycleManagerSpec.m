@@ -38,6 +38,7 @@
 #import "SDLV2ProtocolHeader.h"
 #import "SDLV2ProtocolMessage.h"
 #import "SDLVehicleType.h"
+#import "SDLVersion.h"
 #import "SDLVideoStreamingCapability.h"
 #import "SDLVideoStreamingState.h"
 #import "SDLVehicleType.h"
@@ -53,6 +54,8 @@
 
 @end
 
+static void postRAINotification(void);
+
 QuickSpecBegin(SDLStreamingVideoLifecycleManagerSpec)
 
 describe(@"the streaming video manager", ^{
@@ -66,6 +69,10 @@ describe(@"the streaming video manager", ^{
     __block SDLSystemCapabilityManager *testSystemCapabilityManager = nil;
     __block SDLConfiguration *testConfig = nil;
 
+    // set proper version up
+    [SDLGlobals sharedGlobals].rpcVersion = [SDLVersion version:6:0:0];
+    [SDLGlobals sharedGlobals].maxHeadUnitProtocolVersion = [SDLVersion version:6:0:0];
+
     __block void (^sendNotificationForHMILevel)(SDLHMILevel hmiLevel, SDLVideoStreamingState streamState) = ^(SDLHMILevel hmiLevel, SDLVideoStreamingState streamState) {
         SDLOnHMIStatus *hmiStatus = [[SDLOnHMIStatus alloc] init];
         hmiStatus.hmiLevel = hmiLevel;
@@ -74,20 +81,38 @@ describe(@"the streaming video manager", ^{
         [[NSNotificationCenter defaultCenter] postNotification:notification];
     };
 
-    beforeEach(^{
-        testConfiguration.customVideoEncoderSettings = @{
-                                                         (__bridge NSString *)kVTCompressionPropertyKey_ExpectedFrameRate : @1
-                                                         };
-        testConfiguration.dataSource = testDataSource;
-        testConfiguration.rootViewController = testViewController;
-        testConnectionManager = [[TestConnectionManager alloc] init];
+    //    beforeEach(^{
+    NSLog(@"beforeEach-in");
 
-        testLifecycleConfiguration.appType = SDLAppHMITypeNavigation;
+    testConfiguration.customVideoEncoderSettings = @{(id)kVTCompressionPropertyKey_ExpectedFrameRate : @1};
+    testConfiguration.dataSource = testDataSource;
+    testConfiguration.rootViewController = testViewController;
+    testConnectionManager = [[TestConnectionManager alloc] init];
 
-        testConfig = [[SDLConfiguration alloc] initWithLifecycle:testLifecycleConfiguration lockScreen:[SDLLockScreenConfiguration enabledConfiguration] logging:[SDLLogConfiguration debugConfiguration] streamingMedia:testConfiguration fileManager:[SDLFileManagerConfiguration defaultConfiguration] encryption:nil];
+    testLifecycleConfiguration.appType = SDLAppHMITypeNavigation;
 
-        testSystemCapabilityManager = OCMClassMock([SDLSystemCapabilityManager class]);
+    testConfig = [[SDLConfiguration alloc] initWithLifecycle:testLifecycleConfiguration lockScreen:[SDLLockScreenConfiguration enabledConfiguration] logging:[SDLLogConfiguration debugConfiguration] streamingMedia:testConfiguration fileManager:[SDLFileManagerConfiguration defaultConfiguration] encryption:nil];
+
+    NSLog(@"beforeEach-2");
+    //        testSystemCapabilityManager = OCMClassMock([SDLSystemCapabilityManager class]);
+    id<SDLConnectionManagerType> connMgr = OCMProtocolMock(@protocol(SDLConnectionManagerType));
+    NSLog(@"connMgr: %@", connMgr);
+    testSystemCapabilityManager = [[SDLSystemCapabilityManager alloc] initWithConnectionManager:connMgr];
+        NSLog(@"testConnectionManager: %@", testConnectionManager);
         streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:testSystemCapabilityManager];
+
+        NSLog(@"beforeEach-out");
+//    });
+
+    beforeEach(^{
+        NSLog(@"testSystemCapabilityManager: %@", testSystemCapabilityManager);
+        NSLog(@"testConnectionManager: %@", testConnectionManager);
+        streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:testSystemCapabilityManager];
+    });
+
+    afterEach(^{
+        NSLog(@"afterEach (reset)");
+        [testConnectionManager reset];
     });
 
     it(@"should initialize properties", ^{
@@ -116,10 +141,12 @@ describe(@"the streaming video manager", ^{
     describe(@"Getting isStreamingSupported", ^{
         it(@"should get the value from the system capability manager", ^{
             [streamingLifecycleManager isStreamingSupported];
+            NSLog(@"QQQ: %@", testSystemCapabilityManager);
             OCMVerify([testSystemCapabilityManager isCapabilitySupported:SDLSystemCapabilityTypeVideoStreaming]);
         });
 
         it(@"should return true by default if the system capability manager is nil", ^{
+            NSLog(@"testConnectionManager: %@", testConnectionManager);
             streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:nil];
             expect(streamingLifecycleManager.isStreamingSupported).to(beTrue());
         });
@@ -177,6 +204,7 @@ describe(@"the streaming video manager", ^{
                     someRegisterAppInterfaceResponse = [[SDLRegisterAppInterfaceResponse alloc] init];
                     someRegisterAppInterfaceResponse.hmiCapabilities = someHMICapabilities;
                     someRegisterAppInterfaceResponse.vehicleType = testVehicleType;
+                    someRegisterAppInterfaceResponse.success = @YES;
 
                     SDLRPCResponseNotification *notification = [[SDLRPCResponseNotification alloc] initWithName:SDLDidReceiveRegisterAppInterfaceResponse object:self rpcResponse:someRegisterAppInterfaceResponse];
 
@@ -206,6 +234,8 @@ describe(@"the streaming video manager", ^{
                     someRegisterAppInterfaceResponse.vehicleType = testVehicleType;
 
                     someRegisterAppInterfaceResponse.vehicleType = testVehicleType;
+
+                    someRegisterAppInterfaceResponse.success = @YES;
 
                     SDLRPCResponseNotification *notification = [[SDLRPCResponseNotification alloc] initWithName:SDLDidReceiveRegisterAppInterfaceResponse object:self rpcResponse:someRegisterAppInterfaceResponse];
 
@@ -386,6 +416,8 @@ describe(@"the streaming video manager", ^{
             context(@"and both streams are closed", ^{
                 beforeEach(^{
                     [streamingLifecycleManager.videoStreamStateMachine setToState:SDLVideoStreamManagerStateStopped fromOldState:nil callEnterTransition:NO];
+
+                    postRAINotification();
                 });
 
                 context(@"and the hmi state is none", ^{
@@ -457,10 +489,14 @@ describe(@"the streaming video manager", ^{
             });
 
             it(@"should send out a video capabilities request", ^{
-                expect(testConnectionManager.receivedRequests.lastObject).to(beAnInstanceOf([SDLGetSystemCapability class]));
-
+                NSLog(@"testConnectionManager: %@", testConnectionManager);
                 SDLGetSystemCapability *getCapability = (SDLGetSystemCapability *)testConnectionManager.receivedRequests.lastObject;
-                expect(getCapability.systemCapabilityType).to(equal(SDLSystemCapabilityTypeVideoStreaming));
+                if (getCapability) {
+                    expect(getCapability).to(beAnInstanceOf([SDLGetSystemCapability class]));
+                    expect(getCapability.systemCapabilityType).to(equal(SDLSystemCapabilityTypeVideoStreaming));
+                } else {
+                    failWithMessage(@"no requests recorded");
+                }
             });
 
             describe(@"after sending GetSystemCapabilities", ^{
@@ -470,6 +506,7 @@ describe(@"the streaming video manager", ^{
                         SDLGenericResponse *genericResponse = [[SDLGenericResponse alloc] init];
                         genericResponse.resultCode = SDLResultInvalidData;
 
+                        NSLog(@"testConnectionManager: %@", testConnectionManager);
                         [testConnectionManager respondToLastRequestWithResponse:genericResponse];
                     });
 
@@ -494,6 +531,7 @@ describe(@"the streaming video manager", ^{
 
                             testVideoStreamingCapability = [[SDLVideoStreamingCapability alloc] initWithPreferredResolution:resolution maxBitrate:maxBitrate supportedFormats:testFormats hapticDataSupported:testHapticsSupported diagonalScreenSize:8.5 pixelPerInch:117 scale:1.25];
                             response.systemCapability.videoStreamingCapability = testVideoStreamingCapability;
+                            NSLog(@"testConnectionManager: %@", testConnectionManager);
                             [testConnectionManager respondToLastRequestWithResponse:response];
                         });
 
@@ -754,7 +792,7 @@ describe(@"the streaming video manager", ^{
                     [streamingLifecycleManager protocol:protocolMock didReceiveEndServiceNAK:testVideoMessage];
                 });
 
-                it(@"should have set all the right properties", ^{
+                it(@"expect video stream is stopped", ^{
                     expect(streamingLifecycleManager.currentVideoStreamState).to(equal(SDLVideoStreamManagerStateStopped));
                 });
             });
@@ -877,3 +915,12 @@ describe(@"the streaming video manager", ^{
 });
 
 QuickSpecEnd
+
+
+static void postRAINotification() {
+    SDLRegisterAppInterfaceResponse *rai = [[SDLRegisterAppInterfaceResponse alloc] init];
+    rai.hmiCapabilities = [[SDLHMICapabilities alloc] initWithNavigation:@YES phoneCall:@YES videoStreaming:@YES remoteControl:@YES appServices:@YES displays:@YES seatLocation:@YES driverDistraction:@YES];
+    rai.success = @YES;
+    SDLRPCResponseNotification *note = [[SDLRPCResponseNotification alloc] initWithName:SDLDidReceiveRegisterAppInterfaceResponse object:nil rpcResponse:rai];
+    [[NSNotificationCenter defaultCenter] postNotification:note];
+}

@@ -312,10 +312,7 @@ typedef NSString * SDLServiceID;
         }
 
         return self.hmiCapabilities.videoStreaming.boolValue;
-    } else {
-        return NO;
     }
-
 
     return NO;
 }
@@ -566,7 +563,7 @@ typedef NSString * SDLServiceID;
     SDLSystemCapabilityObserver *observerObject = [[SDLSystemCapabilityObserver alloc] initWithObserver:observer selector:selector];
 
     id<NSObject> subscribedObserver = [self sdl_subscribeToCapabilityType:type observerObject:observerObject];
-    return subscribedObserver == nil ? NO : YES;
+    return nil != subscribedObserver;
 }
 
 /// Helper method for subscribing to a system capability type

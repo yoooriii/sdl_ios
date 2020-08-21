@@ -52,6 +52,13 @@
 #import "SDLVideoEncoderDelegate.h"
 #import "SDLVideoStreamingCapability.h"
 
+#undef SDLLogD
+#undef SDLLogW
+#define SDLLogD NSLog
+#define SDLLogW NSLog
+
+
+
 static NSUInteger const FramesToSendOnBackground = 30;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -596,8 +603,8 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     SDLLogD(@"Request to end video service ACKed on transport %@", protocol.transport);
 
     if (![self.videoStreamStateMachine.currentState isEqualToEnum:SDLVideoStreamManagerStateShuttingDown]) {
-        SDLLogW(@"wrong state %@, skip", self.videoStreamStateMachine.currentState);
-        return;
+        SDLLogW(@"end service in wrong state %@", self.videoStreamStateMachine.currentState);
+//        return;
     }
 
     [self.videoStreamStateMachine transitionToState:SDLVideoStreamManagerStateStopped];
@@ -607,8 +614,7 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     if (endServiceNAK.header.serviceType != SDLServiceTypeVideo) { return; }
 
     if (![self.videoStreamStateMachine.currentState isEqualToEnum:SDLVideoStreamManagerStateShuttingDown]) {
-        SDLLogW(@"Request to end video service NAKed in wrong state %@, skip", self.videoStreamStateMachine.currentState);
-        return;
+        SDLLogW(@"Request to end video service NAKed in wrong state %@", self.videoStreamStateMachine.currentState);
     }
 
     SDLControlFramePayloadNak *nakPayload = [[SDLControlFramePayloadNak alloc] initWithData:endServiceNAK.payload];
@@ -722,6 +728,11 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 #pragma mark - Video capability logic
 
 - (void)sdl_videoCapabilityDidUpdateStarting:(SDLVideoStreamingCapability*)videoCapability {
+    if (!videoCapability) {
+        SDLLogW(@"Empty video capabilities notification received, skip, wait for a real one");
+        return;
+    }
+
     WEAKIFY;
 
     NSArray<SDLVideoStreamingCapability *>* capabilityMatches = [self matchVideoCapability:videoCapability];
@@ -900,6 +911,8 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     SDLLogV(@"Attempting to stop video session");
     if (!self.isStreamingSupported) {
         SDLLogW(@"Head unit does not support video streaming. Will not send an end video service request");
+
+        BOOL ttt = [self isStreamingSupported];
         return;
     }
 
@@ -1084,3 +1097,11 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
 
 #undef WEAKIFY
 NS_ASSUME_NONNULL_END
+
+
+
+
+
+#undef SDLLogD
+#undef SDLLogW
+
