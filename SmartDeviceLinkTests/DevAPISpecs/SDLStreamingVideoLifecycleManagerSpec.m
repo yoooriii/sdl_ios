@@ -81,9 +81,6 @@ describe(@"the streaming video manager", ^{
         [[NSNotificationCenter defaultCenter] postNotification:notification];
     };
 
-    //    beforeEach(^{
-    NSLog(@"beforeEach-in");
-
     testConfiguration.customVideoEncoderSettings = @{(id)kVTCompressionPropertyKey_ExpectedFrameRate : @1};
     testConfiguration.dataSource = testDataSource;
     testConfiguration.rootViewController = testViewController;
@@ -93,25 +90,15 @@ describe(@"the streaming video manager", ^{
 
     testConfig = [[SDLConfiguration alloc] initWithLifecycle:testLifecycleConfiguration lockScreen:[SDLLockScreenConfiguration enabledConfiguration] logging:[SDLLogConfiguration debugConfiguration] streamingMedia:testConfiguration fileManager:[SDLFileManagerConfiguration defaultConfiguration] encryption:nil];
 
-    NSLog(@"beforeEach-2");
-    //        testSystemCapabilityManager = OCMClassMock([SDLSystemCapabilityManager class]);
     id<SDLConnectionManagerType> connMgr = OCMProtocolMock(@protocol(SDLConnectionManagerType));
-    NSLog(@"connMgr: %@", connMgr);
     testSystemCapabilityManager = [[SDLSystemCapabilityManager alloc] initWithConnectionManager:connMgr];
-        NSLog(@"testConnectionManager: %@", testConnectionManager);
-        streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:testSystemCapabilityManager];
-
-        NSLog(@"beforeEach-out");
-//    });
+    streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:testSystemCapabilityManager];
 
     beforeEach(^{
-        NSLog(@"testSystemCapabilityManager: %@", testSystemCapabilityManager);
-        NSLog(@"testConnectionManager: %@", testConnectionManager);
         streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:testSystemCapabilityManager];
     });
 
     afterEach(^{
-        NSLog(@"afterEach (reset)");
         [testConnectionManager reset];
     });
 
@@ -119,7 +106,7 @@ describe(@"the streaming video manager", ^{
         expect(streamingLifecycleManager.videoScaleManager.scale).to(equal([[SDLStreamingVideoScaleManager alloc] init].scale));
         expect(streamingLifecycleManager.touchManager).toNot(beNil());
         expect(streamingLifecycleManager.focusableItemManager).toNot(beNil());
-        expect(@(streamingLifecycleManager.isStreamingSupported)).to(equal(@NO));
+        expect(@(streamingLifecycleManager.isStreamingSupported)).to(equal(@YES)); // RAI already received
         expect(@(streamingLifecycleManager.isVideoConnected)).to(equal(@NO));
         expect(@(streamingLifecycleManager.isVideoEncrypted)).to(equal(@NO));
         expect(@(streamingLifecycleManager.isVideoStreamingPaused)).to(equal(@YES));
@@ -138,15 +125,18 @@ describe(@"the streaming video manager", ^{
         expect(streamingLifecycleManager.preferredResolutionIndex).to(equal(0));
     });
 
-    describe(@"Getting isStreamingSupported", ^{
+    describe(@"check isStreamingSupported", ^{
+        it(@"expect post RAI change streaming inner state", ^{
+            expect(@(streamingLifecycleManager.isStreamingSupported)).to(equal(@NO));
+            postRAINotification();
+            expect(@(streamingLifecycleManager.isStreamingSupported)).to(equal(@YES));
+        });
+
         it(@"should get the value from the system capability manager", ^{
-            [streamingLifecycleManager isStreamingSupported];
-            NSLog(@"QQQ: %@", testSystemCapabilityManager);
-            OCMVerify([testSystemCapabilityManager isCapabilitySupported:SDLSystemCapabilityTypeVideoStreaming]);
+            expect(@([testSystemCapabilityManager isCapabilitySupported:SDLSystemCapabilityTypeVideoStreaming])).to(equal(@YES));
         });
 
         it(@"should return true by default if the system capability manager is nil", ^{
-            NSLog(@"testConnectionManager: %@", testConnectionManager);
             streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:nil];
             expect(streamingLifecycleManager.isStreamingSupported).to(beTrue());
         });
@@ -166,7 +156,7 @@ describe(@"the streaming video manager", ^{
         });
 
         it(@"should be ready to stream", ^{
-            expect(@(streamingLifecycleManager.isStreamingSupported)).to(equal(@NO));
+            expect(@(streamingLifecycleManager.isStreamingSupported)).to(equal(@YES));
             expect(@(streamingLifecycleManager.isVideoConnected)).to(equal(@NO));
             expect(@(streamingLifecycleManager.isVideoEncrypted)).to(equal(@NO));
             expect(@(streamingLifecycleManager.isVideoStreamingPaused)).to(equal(@YES));
@@ -923,4 +913,6 @@ static void postRAINotification() {
     rai.success = @YES;
     SDLRPCResponseNotification *note = [[SDLRPCResponseNotification alloc] initWithName:SDLDidReceiveRegisterAppInterfaceResponse object:nil rpcResponse:rai];
     [[NSNotificationCenter defaultCenter] postNotification:note];
+
+    NSLog(@"*** !!!RAI POSTED!!! ***");
 }
