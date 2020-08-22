@@ -55,6 +55,7 @@
 @end
 
 static void postRAINotification(void);
+static void sendNotificationForHMILevel(SDLHMILevel hmiLevel, SDLVideoStreamingState streamState);
 
 QuickSpecBegin(SDLStreamingVideoLifecycleManagerSpec)
 
@@ -73,14 +74,6 @@ describe(@"the streaming video manager", ^{
     [SDLGlobals sharedGlobals].rpcVersion = [SDLVersion version:6:0:0];
     [SDLGlobals sharedGlobals].maxHeadUnitProtocolVersion = [SDLVersion version:6:0:0];
 
-    __block void (^sendNotificationForHMILevel)(SDLHMILevel hmiLevel, SDLVideoStreamingState streamState) = ^(SDLHMILevel hmiLevel, SDLVideoStreamingState streamState) {
-        SDLOnHMIStatus *hmiStatus = [[SDLOnHMIStatus alloc] init];
-        hmiStatus.hmiLevel = hmiLevel;
-        hmiStatus.videoStreamingState = streamState;
-        SDLRPCNotificationNotification *notification = [[SDLRPCNotificationNotification alloc] initWithName:SDLDidChangeHMIStatusNotification object:self rpcNotification:hmiStatus];
-        [[NSNotificationCenter defaultCenter] postNotification:notification];
-    };
-
     testConfiguration.customVideoEncoderSettings = @{(id)kVTCompressionPropertyKey_ExpectedFrameRate : @1};
     testConfiguration.dataSource = testDataSource;
     testConfiguration.rootViewController = testViewController;
@@ -90,8 +83,7 @@ describe(@"the streaming video manager", ^{
 
     testConfig = [[SDLConfiguration alloc] initWithLifecycle:testLifecycleConfiguration lockScreen:[SDLLockScreenConfiguration enabledConfiguration] logging:[SDLLogConfiguration debugConfiguration] streamingMedia:testConfiguration fileManager:[SDLFileManagerConfiguration defaultConfiguration] encryption:nil];
 
-    id<SDLConnectionManagerType> connMgr = OCMProtocolMock(@protocol(SDLConnectionManagerType));
-    testSystemCapabilityManager = [[SDLSystemCapabilityManager alloc] initWithConnectionManager:connMgr];
+    testSystemCapabilityManager = [[SDLSystemCapabilityManager alloc] initWithConnectionManager:testConnectionManager];
     streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:testSystemCapabilityManager];
 
     beforeEach(^{
@@ -481,6 +473,7 @@ describe(@"the streaming video manager", ^{
 
             beforeEach(^{
                 [streamingLifecycleManager.videoStreamStateMachine setToState:SDLVideoStreamManagerStateStarting fromOldState:nil callEnterTransition:YES];
+                NSLog(@"***Starting***");
             });
 
             it(@"should send out a video capabilities request", ^{
@@ -921,3 +914,13 @@ static void postRAINotification() {
 
     NSLog(@"*** !!!RAI POSTED!!! ***");
 }
+
+static void sendNotificationForHMILevel(SDLHMILevel hmiLevel, SDLVideoStreamingState streamState) {
+    SDLOnHMIStatus *hmiStatus = [[SDLOnHMIStatus alloc] init];
+    hmiStatus.hmiLevel = hmiLevel;
+    hmiStatus.videoStreamingState = streamState;
+    SDLRPCNotificationNotification *notification = [[SDLRPCNotificationNotification alloc] initWithName:SDLDidChangeHMIStatusNotification object:nil rpcNotification:hmiStatus];
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
+
+    NSLog(@"*** !!!SDLOnHMIStatus POSTED!!! *** / %@ : %@", hmiLevel, streamState);
+};
