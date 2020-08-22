@@ -96,6 +96,9 @@ describe(@"the streaming video manager", ^{
 
     beforeEach(^{
         streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:testSystemCapabilityManager];
+        testConnectionManager.lastRequestBlock = ^(__kindof SDLRPCRequest * _Nullable request, __kindof SDLRPCResponse * _Nullable response, NSError * _Nullable error) {
+            NSLog(@"***BLOCK***\n%@; %@; %@;", request, response, error);
+        };
     });
 
     afterEach(^{
@@ -469,10 +472,12 @@ describe(@"the streaming video manager", ^{
         });
 
         describe(@"sending a video capabilities request", ^{
-            __block SDLImageResolution *resolution = [[SDLImageResolution alloc] initWithWidth:42 height:69];
-            __block int32_t maxBitrate = 12345;
-            __block NSArray<SDLVideoStreamingFormat *> *testFormats = @[[[SDLVideoStreamingFormat alloc] initWithCodec:SDLVideoStreamingCodecH265 protocol:SDLVideoStreamingProtocolRTMP], [[SDLVideoStreamingFormat alloc] initWithCodec:SDLVideoStreamingCodecH264 protocol:SDLVideoStreamingProtocolRTP]];
-            __block BOOL testHapticsSupported = YES;
+            SDLImageResolution *resolution = [[SDLImageResolution alloc] initWithWidth:42 height:69];
+            const int32_t maxBitrate = 12345;
+            SDLVideoStreamingFormat *format1 = [[SDLVideoStreamingFormat alloc] initWithCodec:SDLVideoStreamingCodecH265 protocol:SDLVideoStreamingProtocolRTMP];
+            SDLVideoStreamingFormat *format2 = [[SDLVideoStreamingFormat alloc] initWithCodec:SDLVideoStreamingCodecH264 protocol:SDLVideoStreamingProtocolRTP];
+            NSArray<SDLVideoStreamingFormat *> *testFormats = @[format1, format2];
+            const BOOL testHapticsSupported = YES;
 
             beforeEach(^{
                 [streamingLifecycleManager.videoStreamStateMachine setToState:SDLVideoStreamManagerStateStarting fromOldState:nil callEnterTransition:YES];
