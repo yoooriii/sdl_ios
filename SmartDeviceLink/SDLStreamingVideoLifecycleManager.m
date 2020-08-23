@@ -909,8 +909,6 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     SDLLogV(@"Attempting to stop video session");
     if (!self.isStreamingSupported) {
         SDLLogW(@"Head unit does not support video streaming. Will not send an end video service request");
-
-        BOOL ttt = [self isStreamingSupported];
         return;
     }
 
