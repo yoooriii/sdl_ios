@@ -382,7 +382,7 @@ typedef NSString * SDLServiceID;
             return;
         }
 
-        if (response.success.boolValue == false) {
+        if (!response.success.boolValue) {
             SDLLogE(@"GetSystemCapability failed, type: %@, error: %@", type, error);
             if (handler == nil) { return; }
             handler(nil, NO, error);
