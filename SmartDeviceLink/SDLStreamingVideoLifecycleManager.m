@@ -52,8 +52,10 @@
 
 #undef SDLLogD
 #undef SDLLogW
+#undef SDLLogE
 #define SDLLogD NSLog
 #define SDLLogW NSLog
+#define SDLLogE NSLog
 
 
 static NSUInteger const FramesToSendOnBackground = 30;
@@ -195,6 +197,8 @@ typedef void(^SDLVideoCapabilityResponseHandler)(SDLVideoStreamingCapability *_N
     _lastPresentationTimestamp = kCMTimeInvalid;
 
     [self addObserver:self forKeyPath:@"preferredFormats" options:0 context:NULL];
+    [self addObserver:self forKeyPath:@"preferredResolutionIndex" options:0 context:NULL];
+    [self addObserver:self forKeyPath:@"preferredFormatIndex" options:0 context:NULL];
 
     return self;
 }
