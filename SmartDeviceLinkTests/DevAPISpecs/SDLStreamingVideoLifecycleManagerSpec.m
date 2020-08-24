@@ -44,7 +44,7 @@
 #import "SDLVehicleType.h"
 #import "TestConnectionManager.h"
 #import "TestSmartConnectionManager.h"
-
+#import "TestStreamingMediaDelegate.h"
 
 @interface SDLStreamingVideoLifecycleManager ()
 
@@ -961,16 +961,21 @@ SDLProtocolHeader *createProtocolHeader(SDLFrameInfo frameData) {
 
 QuickSpecBegin(SDLStreamingVideoLifecycleManagerSpec_GetSystemCapabilities)
 
+const NSInteger testScaledWidth = roundf((float)testVSCResolutionWidth/testVSCScale);
+const NSInteger testScaledHeight = roundf((float)testVSCResolutionHeight/testVSCScale);
+
 describe(@"after sending GetSystemCapabilities", ^{
     __block SDLStreamingVideoLifecycleManager *streamingLifecycleManager = nil;
-    __block SDLStreamingMediaConfiguration *testConfiguration = [SDLStreamingMediaConfiguration insecureConfiguration];
-    __block SDLCarWindowViewController *testViewController = [[SDLCarWindowViewController alloc] init];
+    SDLStreamingMediaConfiguration *testConfiguration = [SDLStreamingMediaConfiguration insecureConfiguration];
+    SDLCarWindowViewController *testViewController = [[SDLCarWindowViewController alloc] init];
     __block SDLFakeStreamingManagerDataSource *testDataSource = [[SDLFakeStreamingManagerDataSource alloc] init];
     __block TestSmartConnectionManager *testConnectionManager = nil;
     __block NSString *testAppName = @"Test App";
     __block SDLLifecycleConfiguration *testLifecycleConfiguration = [SDLLifecycleConfiguration defaultConfigurationWithAppName:testAppName fullAppId:@""];
     __block SDLSystemCapabilityManager *testSystemCapabilityManager = nil;
     __block SDLConfiguration *testConfig = nil;
+    // we need to keep the delegate somewhere sinse the manager does not retain it (weak ref)
+    __strong __block TestStreamingMediaDelegate *strongDelegate = nil;
 
     // set proper version up
     [SDLGlobals sharedGlobals].rpcVersion = [SDLVersion version:6:0:0];
@@ -997,22 +1002,20 @@ describe(@"after sending GetSystemCapabilities", ^{
 
 
     beforeEach(^{
+        // create, init and setup SDLStreamingVideoLifecycleManager
+        strongDelegate = [[TestStreamingMediaDelegate alloc] init];
+        testConfig.streamingMediaConfig.delegate = strongDelegate;
         streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:testSystemCapabilityManager];
         testConnectionManager.lastRequestBlock = ^(__kindof SDLRPCRequest * _Nullable request, __kindof SDLRPCResponse * _Nullable response, NSError * _Nullable error) {
             NSLog(@"***IN BLOCK testConnectionManager.lastRequestBlock***\nrequest{%@}; response{%@}; error{%@};", request, response, error);
         };
         SDLProtocol *protocolMock = OCMClassMock([SDLProtocol class]);
-        //1.
         [streamingLifecycleManager startWithProtocol:protocolMock];
-
-        postRAINotification(); //3
-
-        //2.
-        [streamingLifecycleManager.videoStreamStateMachine setToState:SDLVideoStreamManagerStateStarting fromOldState:nil callEnterTransition:YES];
+        postRAINotification();
 
         const int64_t testMTU = 789456;
-        const int32_t testVideoHeight = 42;
-        const int32_t testVideoWidth = 32;
+        const int32_t testVideoWidth = 320;
+        const int32_t testVideoHeight = 480;
         SDLVideoStreamingCodec testVideoCodec = SDLVideoStreamingCodecH264;
         SDLVideoStreamingProtocol testVideoProtocol = SDLVideoStreamingProtocolRTP;
 
@@ -1020,15 +1023,12 @@ describe(@"after sending GetSystemCapabilities", ^{
         SDLProtocolHeader *testVideoHeader = createProtocolHeader(SDLFrameInfoStartServiceACK);
         SDLProtocolMessage *testVideoMessage = [[SDLV2ProtocolMessage alloc] initWithHeader:testVideoHeader andPayload:testVideoStartServicePayload.data];
 
-        //4.
         [streamingLifecycleManager protocol:protocolMock didReceiveStartServiceACK:testVideoMessage];
-
-        //mv+
         sendNotificationForHMILevel(SDLHMILevelFull, SDLVideoStreamingStateStreamable);
     });
 
     afterEach(^{
-//        [testConnectionManager reset];
+        [strongDelegate reset];
         if (streamingLifecycleManager) {
             [streamingLifecycleManager shutDown];
             // unsubscribe from notifications, otherwise the zombie managers will still receive all notifications
@@ -1059,13 +1059,24 @@ describe(@"after sending GetSystemCapabilities", ^{
                 return;
             }
 
-            expect(streamingLifecycleManager.preferredFormats).to(haveCount(1));
-            expect(streamingLifecycleManager.preferredFormats.firstObject.codec).to(equal(SDLVideoStreamingCodecH264));
-            expect(streamingLifecycleManager.preferredFormats.firstObject.protocol).to(equal(SDLVideoStreamingProtocolRAW));
+            const int expectedFormatCount = 3;
+            NSArray<SDLVideoStreamingFormat *> *preferredFormats = streamingLifecycleManager.preferredFormats;
+            if (expectedFormatCount == preferredFormats.count) {
+                SDLVideoStreamingFormat *format = preferredFormats[expectedFormatCount-1];
+                expect(format.codec).to(equal(SDLVideoStreamingCodecH264));
+                expect(format.protocol).to(equal(SDLVideoStreamingProtocolRTP));
+            } else {
+                failWithMessage(([NSString stringWithFormat:@"expected %d preferred format only but got %d instead\n%@", expectedFormatCount, (int)preferredFormats.count, preferredFormats]));
+            }
 
-            expect(streamingLifecycleManager.preferredResolutions).to(haveCount(1));
-            expect(streamingLifecycleManager.preferredResolutions.firstObject.resolutionWidth).to(equal(0));
-            expect(streamingLifecycleManager.preferredResolutions.firstObject.resolutionHeight).to(equal(0));
+            NSArray<SDLImageResolution *> *preferredResolutions = streamingLifecycleManager.preferredResolutions;
+            if (1 == preferredResolutions.count) {
+                SDLImageResolution *resolution = preferredResolutions[0];
+                expect(resolution.resolutionWidth).to(equal(testScaledWidth));
+                expect(resolution.resolutionHeight).to(equal(testScaledHeight));
+            } else {
+                failWithMessage(([NSString stringWithFormat:@"expected one preferred resolution alone but got %d instead", (int)preferredResolutions.count]));
+            }
         });
 
         context(@"and receiving a response", ^{
@@ -1087,8 +1098,8 @@ describe(@"after sending GetSystemCapabilities", ^{
                 // Correct formats should be retrieved from the data source
                 expect(streamingLifecycleManager.preferredResolutions).to(haveCount(1));
 
-                expect(streamingLifecycleManager.preferredResolutions.firstObject.resolutionWidth).to(equal(testVSCResolutionWidth));
-                expect(streamingLifecycleManager.preferredResolutions.firstObject.resolutionHeight).to(equal(testVSCResolutionHeight));
+                expect(streamingLifecycleManager.preferredResolutions.firstObject.resolutionWidth).to(equal(testScaledWidth));
+                expect(streamingLifecycleManager.preferredResolutions.firstObject.resolutionHeight).to(equal(testScaledHeight));
 
                 expect(streamingLifecycleManager.preferredFormats).to(haveCount(streamingLifecycleManager.supportedFormats.count + 1));
                 expect(streamingLifecycleManager.preferredFormats.firstObject.codec).to(equal(testDataSource.extraFormat.codec));
@@ -1112,8 +1123,8 @@ describe(@"after sending GetSystemCapabilities", ^{
                 expect(preferredFormat.protocol).to(equal(SDLVideoStreamingProtocolRTP));
 
                 SDLImageResolution *preferredResolution = streamingLifecycleManager.preferredResolutions[streamingLifecycleManager.preferredResolutionIndex];
-                expect(preferredResolution.resolutionWidth).to(equal(@(testVSCResolutionWidth)));
-                expect(preferredResolution.resolutionHeight).to(equal(@(testVSCResolutionHeight)));
+                expect(preferredResolution.resolutionWidth).to(equal(@(testScaledWidth)));
+                expect(preferredResolution.resolutionHeight).to(equal(@(testScaledHeight)));
             });
 
             it(@"should set the correct scale value", ^{
