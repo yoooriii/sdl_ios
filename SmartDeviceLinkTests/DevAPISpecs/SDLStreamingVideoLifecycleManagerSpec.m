@@ -21,6 +21,7 @@
 #import "SDLHMILevel.h"
 #import "SDLImageResolution.h"
 #import "SDLLifecycleConfiguration.h"
+#import "SDLLogMacros.h"
 #import "SDLLockScreenConfiguration.h"
 #import "SDLLogConfiguration.h"
 #import "SDLOnHMIStatus.h"
@@ -102,7 +103,7 @@ describe(@"the streaming video manager", ^{
 
         streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:testSystemCapabilityManager];
         testConnectionManager.lastRequestBlock = ^(__kindof SDLRPCRequest * _Nullable request, __kindof SDLRPCResponse * _Nullable response, NSError * _Nullable error) {
-            NSLog(@"***IN BLOCK testConnectionManager.lastRequestBlock***\nrequest{%@}; response{%@}; error{%@};", request, response, error);
+            SDLLogD(@"testConnectionManager.lastRequestBlock:\n\trequest:{%@};\n\tresponse:{%@}\n\terror:{%@};", request, response, error);
         };
     });
 
@@ -112,7 +113,6 @@ describe(@"the streaming video manager", ^{
             [streamingLifecycleManager shutDown];
             streamingLifecycleManager = nil;
         }
-        NSLog(@"END1\n\n==============================================================================\n");
     });
 
     it(@"should initialize properties", ^{
@@ -495,87 +495,7 @@ describe(@"the streaming video manager", ^{
                 }
             });
 
-//            describe(@"after sending GetSystemCapabilities", ^{
-//                context(@"and receiving an error response", ^{
-//                    // This happens if the HU doesn't understand GetSystemCapabilities
-//                    beforeEach(^{
-//                        SDLGenericResponse *genericResponse = [[SDLGenericResponse alloc] init];
-//                        genericResponse.success = @NO;
-//                        genericResponse.resultCode = SDLResultInvalidData;
-//
-//                        NSLog(@"testConnectionManager: %@", testConnectionManager);
-//                        [testConnectionManager respondToLastRequestWithResponse:genericResponse];
-//                    });
-//
-//                    it(@"should have correct format and resolution", ^{
-//                        expect(streamingLifecycleManager.preferredFormats).notTo(beNil());
-//                        expect(streamingLifecycleManager.preferredResolutions).notTo(beNil());
-//                        if (!streamingLifecycleManager.preferredFormats || !streamingLifecycleManager.preferredResolutions) {
-//                            return;
-//                        }
-//
-//                        expect(streamingLifecycleManager.preferredFormats).to(haveCount(1));
-//                        expect(streamingLifecycleManager.preferredFormats.firstObject.codec).to(equal(SDLVideoStreamingCodecH264));
-//                        expect(streamingLifecycleManager.preferredFormats.firstObject.protocol).to(equal(SDLVideoStreamingProtocolRAW));
-//
-//                        expect(streamingLifecycleManager.preferredResolutions).to(haveCount(1));
-//                        expect(streamingLifecycleManager.preferredResolutions.firstObject.resolutionWidth).to(equal(0));
-//                        expect(streamingLifecycleManager.preferredResolutions.firstObject.resolutionHeight).to(equal(0));
-//                    });
-//
-//                    context(@"and receiving a response", ^{
-//                        beforeEach(^{
-//                            SDLGetSystemCapabilityResponse *response = createSystemCapabilityResponse();
-//                            NSLog(@"testConnectionManager: %@", testConnectionManager);
-//                            [testConnectionManager respondToLastRequestWithResponse:response];
-//                        });
-//
-//                        it(@"should have correct data from the data source", ^{
-//                            expect(streamingLifecycleManager.preferredFormats).notTo(beNil());
-//                            expect(streamingLifecycleManager.preferredResolutions).notTo(beNil());
-//                            if (!streamingLifecycleManager.preferredFormats || !streamingLifecycleManager.preferredResolutions) {
-//                                return;
-//                            }
-//
-//                            // Correct formats should be retrieved from the data source
-//                            expect(streamingLifecycleManager.preferredResolutions).to(haveCount(1));
-//
-//                            expect(streamingLifecycleManager.preferredResolutions.firstObject.resolutionWidth).to(equal(testVSCResolutionWidth));
-//                            expect(streamingLifecycleManager.preferredResolutions.firstObject.resolutionHeight).to(equal(testVSCResolutionHeight));
-//
-//                            expect(streamingLifecycleManager.preferredFormats).to(haveCount(streamingLifecycleManager.supportedFormats.count + 1));
-//                            expect(streamingLifecycleManager.preferredFormats.firstObject.codec).to(equal(testDataSource.extraFormat.codec));
-//                            expect(streamingLifecycleManager.preferredFormats.firstObject.protocol).to(equal(testDataSource.extraFormat.protocol));
-//
-//                            // The haptic manager should be enabled
-//                            expect(streamingLifecycleManager.focusableItemManager.enableHapticDataRequests).to(equal(YES));
-//                        });
-//
-//                        it(@"should have decided upon the correct preferred format and resolution", ^{
-//                            expect(streamingLifecycleManager.preferredFormats).notTo(beNil());
-//                            expect(streamingLifecycleManager.preferredResolutions).notTo(beNil());
-//                            if (!streamingLifecycleManager.preferredFormats || !streamingLifecycleManager.preferredResolutions) {
-//                                return;
-//                            }
-//
-//                            SDLVideoStreamingFormat *preferredFormat = streamingLifecycleManager.preferredFormats[streamingLifecycleManager.preferredFormatIndex];
-//                            expect(preferredFormat.codec).to(equal(SDLVideoStreamingCodecH264));
-//                            expect(preferredFormat.protocol).to(equal(SDLVideoStreamingProtocolRTP));
-//
-//                            SDLImageResolution *preferredResolution = streamingLifecycleManager.preferredResolutions[streamingLifecycleManager.preferredResolutionIndex];
-//                            expect(preferredResolution.resolutionWidth).to(equal(@(testVSCResolutionWidth)));
-//                            expect(preferredResolution.resolutionHeight).to(equal(@(testVSCResolutionHeight)));
-//                        });
-//
-//                        it(@"should set the correct scale value", ^{
-//                            expect(streamingLifecycleManager.videoScaleManager).notTo(beNil());
-//                            expect(streamingLifecycleManager.videoScaleManager.scale).to(equal(testVSCScale));
-//                        });
-//                    });
-//                });
-//            });
-
-            describe(@"after receiving a Video Start ACK", ^{
+        describe(@"after receiving a Video Start ACK", ^{
                 __block SDLProtocolHeader *testVideoHeader = nil;
                 __block SDLProtocolMessage *testVideoMessage = nil;
                 __block SDLControlFramePayloadVideoStartServiceAck *testVideoStartServicePayload = nil;
@@ -687,11 +607,13 @@ describe(@"the streaming video manager", ^{
                         SDLVideoStreamingFormat *testVideoFormat2 = [[SDLVideoStreamingFormat alloc] initWithCodec:SDLVideoStreamingCodecH264 protocol:SDLVideoStreamingProtocolRTP];
                         testPreferredFormats = @[testVideoFormat, testVideoFormat2];
                         streamingLifecycleManager.preferredFormats = testPreferredFormats;
+                        streamingLifecycleManager.preferredFormatIndex = 0;
 
                         SDLImageResolution *testImageResolution = [[SDLImageResolution alloc] initWithWidth:400 height:200];
                         SDLImageResolution *testImageResolution2 = [[SDLImageResolution alloc] initWithWidth:500 height:800];
                         testPreferredResolutions = @[testImageResolution, testImageResolution2];
                         streamingLifecycleManager.preferredResolutions = testPreferredResolutions;
+                        streamingLifecycleManager.preferredResolutionIndex = 0;
 
                         testVideoStartNakPayload = [[SDLControlFramePayloadNak alloc] initWithRejectedParams:@[[NSString stringWithUTF8String:SDLControlFrameHeightKey], [NSString stringWithUTF8String:SDLControlFrameVideoCodecKey]]];
                         testVideoMessage = [[SDLV2ProtocolMessage alloc] initWithHeader:testVideoHeader andPayload:testVideoStartNakPayload.data];
@@ -710,10 +632,12 @@ describe(@"the streaming video manager", ^{
                         SDLVideoStreamingFormat *testVideoFormat2 = [[SDLVideoStreamingFormat alloc] initWithCodec:SDLVideoStreamingCodecH264 protocol:SDLVideoStreamingProtocolRTP];
                         testPreferredFormats = @[testVideoFormat, testVideoFormat2];
                         streamingLifecycleManager.preferredFormats = testPreferredFormats;
+                        streamingLifecycleManager.preferredFormatIndex = 0;
 
                         SDLImageResolution *testImageResolution = [[SDLImageResolution alloc] initWithWidth:400 height:200];
                         testPreferredResolutions = @[testImageResolution];
                         streamingLifecycleManager.preferredResolutions = testPreferredResolutions;
+                        streamingLifecycleManager.preferredResolutionIndex = 0;
 
                         testVideoStartNakPayload = [[SDLControlFramePayloadNak alloc] initWithRejectedParams:@[[NSString stringWithUTF8String:SDLControlFrameVideoCodecKey]]];
                         testVideoMessage = [[SDLV2ProtocolMessage alloc] initWithHeader:testVideoHeader andPayload:testVideoStartNakPayload.data];
@@ -920,8 +844,6 @@ static void postRAINotification() {
     rai.success = @YES;
     SDLRPCResponseNotification *note = [[SDLRPCResponseNotification alloc] initWithName:SDLDidReceiveRegisterAppInterfaceResponse object:nil rpcResponse:rai];
     [[NSNotificationCenter defaultCenter] postNotification:note];
-
-    NSLog(@"*** !!!RAI POSTED!!! ***");
 }
 
 static void sendNotificationForHMILevel(SDLHMILevel hmiLevel, SDLVideoStreamingState streamState) {
@@ -930,8 +852,6 @@ static void sendNotificationForHMILevel(SDLHMILevel hmiLevel, SDLVideoStreamingS
     hmiStatus.videoStreamingState = streamState;
     SDLRPCNotificationNotification *notification = [[SDLRPCNotificationNotification alloc] initWithName:SDLDidChangeHMIStatusNotification object:nil rpcNotification:hmiStatus];
     [[NSNotificationCenter defaultCenter] postNotification:notification];
-
-    NSLog(@"*** !!!SDLOnHMIStatus POSTED!!! *** / %@ : %@", hmiLevel, streamState);
 };
 
 static SDLGetSystemCapabilityResponse* createSystemCapabilityResponse() {
@@ -966,16 +886,13 @@ const NSInteger testScaledHeight = roundf((float)testVSCResolutionHeight/testVSC
 
 describe(@"after sending GetSystemCapabilities", ^{
     __block SDLStreamingVideoLifecycleManager *streamingLifecycleManager = nil;
-    SDLStreamingMediaConfiguration *testConfiguration = [SDLStreamingMediaConfiguration insecureConfiguration];
-    SDLCarWindowViewController *testViewController = [[SDLCarWindowViewController alloc] init];
-    __block SDLFakeStreamingManagerDataSource *testDataSource = [[SDLFakeStreamingManagerDataSource alloc] init];
-    __block TestSmartConnectionManager *testConnectionManager = nil;
-    __block NSString *testAppName = @"Test App";
-    __block SDLLifecycleConfiguration *testLifecycleConfiguration = [SDLLifecycleConfiguration defaultConfigurationWithAppName:testAppName fullAppId:@""];
-    __block SDLSystemCapabilityManager *testSystemCapabilityManager = nil;
-    __block SDLConfiguration *testConfig = nil;
     // we need to keep the delegate somewhere sinse the manager does not retain it (weak ref)
     __strong __block TestStreamingMediaDelegate *strongDelegate = nil;
+    SDLStreamingMediaConfiguration *testConfiguration = [SDLStreamingMediaConfiguration insecureConfiguration];
+    SDLCarWindowViewController *testViewController = [[SDLCarWindowViewController alloc] init];
+    SDLFakeStreamingManagerDataSource *testDataSource = [[SDLFakeStreamingManagerDataSource alloc] init];
+    NSString *testAppName = @"Test App";
+    SDLLifecycleConfiguration *testLifecycleConfiguration = [SDLLifecycleConfiguration defaultConfigurationWithAppName:testAppName fullAppId:@""];
 
     // set proper version up
     [SDLGlobals sharedGlobals].rpcVersion = [SDLVersion version:6:0:0];
@@ -986,7 +903,7 @@ describe(@"after sending GetSystemCapabilities", ^{
     testConfiguration.rootViewController = testViewController;
 
     // load connection manager with fake data
-    testConnectionManager = [[TestSmartConnectionManager alloc] init];
+    TestSmartConnectionManager *testConnectionManager = [[TestSmartConnectionManager alloc] init];
     TestSmartConnection *connectionModel = [[TestSmartConnection alloc] init];
     SDLGetSystemCapability *getRequest = [[SDLGetSystemCapability alloc] initWithType:SDLSystemCapabilityTypeVideoStreaming];
     connectionModel.request = getRequest;
@@ -995,11 +912,9 @@ describe(@"after sending GetSystemCapabilities", ^{
 
     testLifecycleConfiguration.appType = SDLAppHMITypeNavigation;
 
-    testConfig = [[SDLConfiguration alloc] initWithLifecycle:testLifecycleConfiguration lockScreen:[SDLLockScreenConfiguration enabledConfiguration] logging:[SDLLogConfiguration debugConfiguration] streamingMedia:testConfiguration fileManager:[SDLFileManagerConfiguration defaultConfiguration] encryption:nil];
+    SDLConfiguration *testConfig = [[SDLConfiguration alloc] initWithLifecycle:testLifecycleConfiguration lockScreen:[SDLLockScreenConfiguration enabledConfiguration] logging:[SDLLogConfiguration debugConfiguration] streamingMedia:testConfiguration fileManager:[SDLFileManagerConfiguration defaultConfiguration] encryption:nil];
 
-    testSystemCapabilityManager = [[SDLSystemCapabilityManager alloc] initWithConnectionManager:testConnectionManager];
-
-
+    SDLSystemCapabilityManager *testSystemCapabilityManager = [[SDLSystemCapabilityManager alloc] initWithConnectionManager:testConnectionManager];
 
     beforeEach(^{
         // create, init and setup SDLStreamingVideoLifecycleManager
@@ -1007,7 +922,7 @@ describe(@"after sending GetSystemCapabilities", ^{
         testConfig.streamingMediaConfig.delegate = strongDelegate;
         streamingLifecycleManager = [[SDLStreamingVideoLifecycleManager alloc] initWithConnectionManager:testConnectionManager configuration:testConfig systemCapabilityManager:testSystemCapabilityManager];
         testConnectionManager.lastRequestBlock = ^(__kindof SDLRPCRequest * _Nullable request, __kindof SDLRPCResponse * _Nullable response, NSError * _Nullable error) {
-            NSLog(@"***IN BLOCK testConnectionManager.lastRequestBlock***\nrequest{%@}; response{%@}; error{%@};", request, response, error);
+            SDLLogD(@"testConnectionManager.lastRequestBlock:\n\trequest:{%@};\n\tresponse:{%@}\n\terror:{%@};", request, response, error);
         };
         SDLProtocol *protocolMock = OCMClassMock([SDLProtocol class]);
         [streamingLifecycleManager startWithProtocol:protocolMock];
@@ -1035,7 +950,7 @@ describe(@"after sending GetSystemCapabilities", ^{
             [[NSNotificationCenter defaultCenter] removeObserver:streamingLifecycleManager];
             streamingLifecycleManager = nil;
         }
-        NSLog(@"RESET MGR\n\n==============================================================================\n");
+        SDLLogD(@"End of test\n\n");
     });
 
 
@@ -1046,13 +961,10 @@ describe(@"after sending GetSystemCapabilities", ^{
             genericResponse.success = @NO;
             genericResponse.resultCode = SDLResultInvalidData;
 
-            NSLog(@"testConnectionManager: %@", testConnectionManager);
             [testConnectionManager respondToLastRequestWithResponse:genericResponse];
         });
 
         it(@"should have correct format and resolution", ^{
-            NSLog(@"MGR.STATE: %@", streamingLifecycleManager.videoStreamStateMachine.currentState);
-
             expect(streamingLifecycleManager.preferredFormats).notTo(beNil());
             expect(streamingLifecycleManager.preferredResolutions).notTo(beNil());
             if (!streamingLifecycleManager.preferredFormats || !streamingLifecycleManager.preferredResolutions) {
@@ -1082,13 +994,10 @@ describe(@"after sending GetSystemCapabilities", ^{
         context(@"and receiving a response", ^{
             beforeEach(^{
                 SDLGetSystemCapabilityResponse *response = createSystemCapabilityResponse();
-                NSLog(@"testConnectionManager: %@", testConnectionManager);
                 [testConnectionManager respondToLastRequestWithResponse:response];
             });
 
             it(@"should have correct data from the data source", ^{
-                NSLog(@"MGR.STATE: %@", streamingLifecycleManager.videoStreamStateMachine.currentState);
-
                 expect(streamingLifecycleManager.preferredFormats).notTo(beNil());
                 expect(streamingLifecycleManager.preferredResolutions).notTo(beNil());
                 if (!streamingLifecycleManager.preferredFormats || !streamingLifecycleManager.preferredResolutions) {
@@ -1110,8 +1019,6 @@ describe(@"after sending GetSystemCapabilities", ^{
             });
 
             it(@"should have decided upon the correct preferred format and resolution", ^{
-                NSLog(@"MGR.STATE: %@", streamingLifecycleManager.videoStreamStateMachine.currentState);
-
                 expect(streamingLifecycleManager.preferredFormats).notTo(beNil());
                 expect(streamingLifecycleManager.preferredResolutions).notTo(beNil());
                 if (!streamingLifecycleManager.preferredFormats || !streamingLifecycleManager.preferredResolutions) {
@@ -1128,13 +1035,12 @@ describe(@"after sending GetSystemCapabilities", ^{
             });
 
             it(@"should set the correct scale value", ^{
-                NSLog(@"MGR.STATE: %@", streamingLifecycleManager.videoStreamStateMachine.currentState);
-
                 expect(streamingLifecycleManager.videoScaleManager).notTo(beNil());
                 expect(streamingLifecycleManager.videoScaleManager.scale).to(equal(testVSCScale));
             });
         });
     });
+
 });
 
 QuickSpecEnd
